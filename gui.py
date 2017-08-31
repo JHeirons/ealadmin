@@ -36,18 +36,39 @@ class EquipmentEntry(Gtk.Window):
         self.button2 = Gtk.Button(label="Enter")
         self.button2.connect("clicked", self.on_button2_clicked)
         
+        label3 = Gtk.Label()
+        label3.set_text("Enter Manufacturer")
+        
+        self.name1_store = Gtk.ListStore(int, str)
+        self.name1_store.append([1, "SHAW"])
+        self.name1_store.append([2, "Met One"])
+        self.name1_store.append([3, "TOurge Wrench"])
+        self.name1_store.append([4, "Keller"])
+        
+        manufacturer_combo = Gtk.ComboBox.new_with_model_and_entry(self.name1_store)
+        manufacturer_combo.connect("changed", self.on_type_combo_changed)
+        manufacturer_combo.set_entry_text_column(1)
+        
+        self.button3 = Gtk.Button(label="Enter")
+        self.button3.connect("clicked", self.on_button2_clicked)
+        
         grid.add(label)
         grid.attach(self.entry, 1, 0, 3, 1)
         grid.attach_next_to(self.button, self.entry, Gtk.PositionType.RIGHT, 1, 1)
+        
         grid.attach(label2, 0, 1, 1, 1)
         grid.attach(type_combo, 1, 1, 3, 1)
         grid.attach_next_to(self.button2, type_combo, Gtk.PositionType.RIGHT, 1, 1)
         
+        grid.attach(label3, 0, 2, 1, 1)
+        grid.attach(manufacturer_combo, 1, 2, 3, 1)
+        grid.attach_next_to(self.button3, manufacturer_combo, Gtk.PositionType.RIGHT, 1, 1)
+        
         
         
     def on_button_clicked(self, widget):
-        ealNumber = self.entry.get_text()
-        print(ealNumber)
+        info = self.entry.get_text()
+        print(info)
     
     def on_type_combo_changed(self, combo):
         tree_iter = combo.get_active_iter()
