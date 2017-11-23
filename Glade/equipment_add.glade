@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="equipment_add_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -34,12 +33,13 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="equipment_add_button_remove">
                 <property name="label" translatable="yes">Remove</property>
-                <property name="name">80</property>
                 <property name="width_request">100</property>
                 <property name="height_request">40</property>
                 <property name="visible">True</property>
@@ -51,6 +51,8 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
             <child>
@@ -66,6 +68,8 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
             <child>
@@ -82,6 +86,8 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
           </object>
@@ -95,7 +101,6 @@
         <child>
           <object class="GtkImage" id="equipment_eal">
             <property name="width_request">220</property>
-            <property name="height_request">-1</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
@@ -124,9 +129,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">EAL Number:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -142,7 +147,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">EAL Number</property>
+                    <property name="placeholder_text">EAL Number</property>
                     <signal name="changed" handler="on_equipment_add_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -167,9 +172,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Equipment Type:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -185,7 +190,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Equipment Type</property>
+                    <property name="placeholder_text">Equipment Type</property>
                     <signal name="changed" handler="on_equipment_add_entry_type_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -210,9 +215,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Manufacturer:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -228,7 +233,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Manufacturer</property>
+                    <property name="placeholder_text">Manufacturer</property>
                     <signal name="changed" handler="on_equipment_add_entry_manufacturer_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -253,9 +258,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Model:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -271,7 +276,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Model</property>
+                    <property name="placeholder_text">Model</property>
                     <signal name="changed" handler="on_equipment_add_entry_model_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -296,9 +301,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Serial Number:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -314,7 +319,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Serial Number</property>
+                    <property name="placeholder_text">Serial Number</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -338,9 +343,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Pressure:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -355,7 +360,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Pressure (bar)</property>
+                    <property name="placeholder_text">Pressure (bar)</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -387,16 +392,11 @@
     </child>
     <child>
       <object class="GtkScrolledWindow" id="equipment_add_scroll_window">
-        <property name="width_request">-1</property>
-        <property name="height_request">-1</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="margin_left">15</property>
         <property name="margin_top">70</property>
         <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
         <child>
           <placeholder/>
         </child>

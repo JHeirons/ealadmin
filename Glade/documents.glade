@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="documents_add_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -33,12 +32,13 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="documents_add_button_clear">
                 <property name="label" translatable="yes">Clear</property>
-                <property name="name">80</property>
                 <property name="width_request">100</property>
                 <property name="height_request">40</property>
                 <property name="visible">True</property>
@@ -49,6 +49,8 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
           </object>
@@ -62,7 +64,6 @@
         <child>
           <object class="GtkImage" id="documents_add_logo">
             <property name="width_request">220</property>
-            <property name="height_request">-1</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
@@ -91,9 +92,9 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document For:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -109,7 +110,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document For</property>
+                    <property name="placeholder_text">Document For</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -133,10 +134,10 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document ID
 Reference:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -152,7 +153,7 @@ Reference:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Documnent ID Reference</property>
+                    <property name="placeholder_text">Documnent ID Reference</property>
                     <signal name="changed" handler="on_documents_add_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -177,10 +178,10 @@ Reference:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document 
 Name:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -196,7 +197,7 @@ Name:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document Name</property>
+                    <property name="placeholder_text">Document Name</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -220,10 +221,10 @@ Name:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document 
 Issue:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -239,7 +240,7 @@ Issue:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document Issue</property>
+                    <property name="placeholder_text">Document Issue</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -263,10 +264,10 @@ Issue:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Reason for
 Issue:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -282,7 +283,7 @@ Issue:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Reason for Issue</property>
+                    <property name="placeholder_text">Reason for Issue</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -306,9 +307,9 @@ Issue:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document Date:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -351,10 +352,10 @@ Issue:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Document
 Location:</property>
-                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -401,16 +402,11 @@ Location:</property>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="documents_add_scroll_window">
-        <property name="width_request">-1</property>
-        <property name="height_request">-1</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="margin_left">15</property>
         <property name="margin_top">70</property>
         <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
         <child>
           <placeholder/>
         </child>

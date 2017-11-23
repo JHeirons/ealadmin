@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="equipment_calibration_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -34,6 +33,8 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
             <child>
@@ -49,6 +50,8 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
               </packing>
             </child>
           </object>
@@ -90,10 +93,10 @@
                     <property name="height_request">0</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">EAL Number:</property>
                     <property name="justify">fill</property>
-                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="style" value="normal"/>
                       <attribute name="weight" value="bold"/>
@@ -113,7 +116,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">EAL Number</property>
+                    <property name="placeholder_text">EAL Number</property>
                     <signal name="changed" handler="on_equipment_calibration_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -138,10 +141,10 @@
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Calibration 
 Type:</property>
-                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -165,6 +168,7 @@ Type:</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="margin_top">5</property>
+                        <property name="xalign">0.5</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_equipment_calibration_radio_external_toggled" swapped="no"/>
@@ -178,12 +182,12 @@ Type:</property>
                     <child>
                       <object class="GtkRadioButton" id="equipment_calibration_radio_internal">
                         <property name="label" translatable="yes">Internal</property>
-                        <property name="name">80</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="margin_top">5</property>
                         <property name="margin_bottom">5</property>
+                        <property name="xalign">0.5</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">equipment_calibration_radio_external</property>
@@ -218,10 +222,10 @@ Type:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Calibration 
 Date:</property>
-                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -268,10 +272,10 @@ Date:</property>
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Calibration 
 Company:</property>
-                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -290,7 +294,7 @@ Company:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Calibration Company</property>
+                    <property name="placeholder_text">Calibration Company</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -318,10 +322,10 @@ Company:</property>
                     <property name="height_request">30</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
                     <property name="xpad">15</property>
                     <property name="label" translatable="yes">Calibration 
 Certificate:</property>
-                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -381,9 +385,6 @@ Certificate:</property>
         <property name="margin_top">70</property>
         <property name="margin_bottom">5</property>
         <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
         <child>
           <placeholder/>
         </child>
