@@ -1,7 +1,11 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-import mysql_con
+import sqlite3
+
+db = sqlite3.connect("admin.db")
+#db = sqlite3.connect("http://ealserver/Jonathan Folder/admin.db")
+c = db.cursor()
 
 class Store():
     def __init__(self):

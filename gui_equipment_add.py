@@ -2,8 +2,9 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-from gui_liststores import EquipmentStore
+#from gui_liststores import EquipmentStore
 from gui_functions import Function
+from store import Store
 import sqlite3
 
 db = sqlite3.connect("admin.db")
@@ -19,11 +20,11 @@ class EquipmentAddPage:
         self.go = self.builder.get_object
         self.page = self.go("equipment_add_page")
         self.scroll = self.go("equipment_add_scroll_window")
-        self.store = EquipmentStore()
+        self.store = Store()
         
         self.current_filter = None
         
-        self.filter = self.store.full_equipment_store.filter_new()
+        self.filter = self.store.equipment.filter_new()
         self.filter.set_visible_func(self.filter_func)
     
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
@@ -44,18 +45,21 @@ class EquipmentAddPage:
         
             
     def treeview_refresh(self):
-        self.store.full_equipment_store.clear()
-        self.store = EquipmentStore()
-        self.treeview.set_model(model=self.store.full_equipment_store)
+        self.store.equipment.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.equipment)
         self.completions()
         
         print("Refresh")
         
     def completions(self):
-        Function.entry_completion(self, self.store.full_equipment_store, "equipment_add_entry_eal", 0)
-        Function.entry_completion(self, self.store.type_equipment_store, "equipment_add_entry_type", 0)
-        Function.entry_completion(self, self.store.manufacturer_equipment_store, "equipment_add_entry_manufacturer", 0)
-        Function.entry_completion(self, self.store.model_equipment_store, "equipment_add_entry_model", 0)
+        Function.entry_completion(self, self.store.equipment, "equipment_add_entry_eal", 0)
+        self.store_type = Store.Completion(self, "equipment_type", "equipment")
+        Function.entry_completion(self, self.store_type, "equipment_add_entry_type", 0)
+        self.store_manufacturer = Store.Completion(self, "manufacturer", "equipment")
+        Function.entry_completion(self, self.store_manufacturer, "equipment_add_entry_manufacturer", 0)
+        self.store_model = Store.Completion(self, "model", "equipment")
+        Function.entry_completion(self, self.store_model, "equipment_add_entry_model", 0)
     
     def on_equipment_add_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
