@@ -2,13 +2,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-from gui_liststores import LogStore, EquipmentStore, ProcedureStore
 from gui_functions import Function
+from store import Store
 import sqlite3
 
 db = sqlite3.connect("admin.db")
+#db = sqlite3.connect("http://ealserver/Jonathan Folder/admin.db")
 c = db.cursor()
-c.execute("""PRAGMA foreign_keys = 1""")
+
 
 
 class DocumentsAddPage:
@@ -19,9 +20,8 @@ class DocumentsAddPage:
         self.go = self.builder.get_object
         self.page = self.go("documents_add_page")
         self.scroll = self.go("documents_add_scroll_window")
-        self.store = LogStore()
-        self.equipment = EquipmentStore()
-        self.procedure = ProcedureStore()
+        self.store = Store()
+
         
         #self.entries = {"eal_number":"equipment_log_entry_eal", "log_from":"equipment_log_entry_from", "log_to":"equipment_log_entry_to", "procedure":"equipment_log_entry_procedure", "message":"equipment_log_entry_message"}
         

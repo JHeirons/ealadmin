@@ -6,10 +6,9 @@ from gi.repository import Gtk
 class Function:
     def __init__(self):
         self.builder = Gtk.Builder()
-        self.go = self.builder.get_object
         
     def get_entry(self, entry):
-        entry_to_get = self.go(entry)
+        entry_to_get = self.builder.get_object(entry)
         entry_text = entry_to_get.get_text()
         return entry_text
     
@@ -22,7 +21,7 @@ class Function:
         return entered_text
     
     def set_entry(self, entry, text):
-        entry_to_set = self.go(entry)
+        entry_to_set = self.builder.get_object(entry)
         set_text = entry_to_set.set_text(text)
         return text
         
@@ -39,7 +38,7 @@ class Function:
     
     
     def entry_completion(self, model, entry, column):
-        entry_to_complete = self.go(entry)
+        entry_to_complete = self.builder.get_object(entry)
         completion = Gtk.EntryCompletion()
         completion.set_model(model)
         entry_to_complete.set_completion(completion)

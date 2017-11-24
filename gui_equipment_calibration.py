@@ -1,7 +1,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from gui_liststores import CalibrationStore, EquipmentStore
+from store import Store
 from datetime import date, datetime, timedelta
 from gui_functions import Function
 import sqlite3
@@ -17,23 +17,20 @@ class EquipmentCalibrationPage:
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_calibration.glade")
         self.builder.connect_signals(self)
-        self.go = self.builder.get_object
-        self.page = self.go("equipment_calibration_page")
-        self.calibration_scroll = self.go("equipment_calibration_scroll_window")
+        self.page = self.builder.get_object("equipment_calibration_page")
+        self.scroll = self.builder.get_object("equipment_calibration_scroll_window")
         
-        self.store = CalibrationStore()
-        self.equipment_store = EquipmentStore()
+        self.store =Store()
         
-        self.current_calibration_filter = None
+        self.current_filter = None
         
-        self.calibration_filter = self.store.full_calibration_store.filter_new()
-        self.calibration_filter.set_visible_func(self.calibration_filter_func)
+        self.filter = self.store.calibration.filter_new()
+        self.filter.set_visible_func(self.filter_func)
     
-        self.calibration_treeview = Gtk.TreeView.new_with_model(self.calibration_filter)
-        self.calibration_scroll.add(self.calibration_treeview)
+        self.treeview = Gtk.TreeView.new_with_model(self.filter)
+        self.scroll.add(self.treeview)
         
         self.entries = {"eal_number":"equipment_calibration_entry_eal", "calibration_company":"equipment_calibration_entry_company"}
-        
         
         self.type = "External"
         
@@ -41,27 +38,27 @@ class EquipmentCalibrationPage:
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             
-            self.calibration_treeview.append_column(self.column)
+            self.treeview.append_column(self.column)
         
-        self.select = self.calibration_treeview.get_selection()
+        self.select = self.treeview.get_selection()
         self.select.connect("changed", self.on_equipment_calibration_tree_selection_changed)
         self.completions()
     
         
     def completions(self):
-        Function.entry_completion(self, self.equipment_store.full_equipment_store, "equipment_calibration_entry_eal", 0)
-        Function.entry_completion(self, self.store.company_calibration_store, "equipment_calibration_entry_company", 0)
-        
+        Function.entry_completion(self, self.store.calibration, "equipment_calibration_entry_eal", 0)
+        self.store_company = Store.Completion(self, "cal_comp", "calibration")
+        Function.entry_completion(self, self.store_company, "equipment_calibration_entry_company", 0)
     
     def treeview_refresh(self):
-        self.store.full_calibration_store.clear()
-        self.store = CalibrationStore()
-        self.calibration_treeview.set_model(model=self.store.full_calibration_store)
+        self.store.calibration.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.calibration)
         self.completions()
         print("Refresh")
         
     def cal_date(self):
-        calendar = self.go("equipment_calibration_calendar_date")
+        calendar = self.builder.get_object("equipment_calibration_calendar_date")
         get_date = calendar.get_date()
         month = get_date.month + 1
         date = str(get_date.day) + '/' + str(month) + '/' + str(get_date.year)
@@ -87,20 +84,20 @@ class EquipmentCalibrationPage:
     
     def on_equipment_calibration_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
-        selected = []
+        self.selected = []
         for path in pathlist :
             tree_iter = model.get_iter(path)
             self.eal_number = model.get_value(tree_iter,0)
-            selected.append(self.eal_number)
+            self.selected.append(self.eal_number)
             self.calibration_company = model.get_value(tree_iter,1)
-            selected.append(self.calibration_company)
+            self.selected.append(self.calibration_company)
             self.calibration_type = model.get_value(tree_iter,2)
             self.calibration_date = model.get_value(tree_iter,3)
             self.calibration_recall = model.get_value(tree_iter,4)
             self.calibration_expiry = model.get_value(tree_iter,5)
             self.calibration_certificate = model.get_value(tree_iter,6)
-            selected.append(self.calibration_certificate)
-            Function.set_entries(self, self.entries, selected)
+            self.selected.append(self.calibration_certificate)
+            Function.set_entries(self, self.entries, self.selected)
         
         
     
@@ -156,13 +153,13 @@ class EquipmentCalibrationPage:
     
     def on_equipment_calibration_entry_eal_changed(self, equipment_calibration_entry_eal):
         search = equipment_calibration_entry_eal.get_text()
-        self.current_calibration_filter = search.upper()
+        self.current_filter = search.upper()
         self.current_filter_column = 0
-        print(self.current_calibration_filter)
-        self.calibration_filter.refilter()
+        print(self.current_filter)
+        self.filter.refilter()
         
-    def calibration_filter_func(self, model, iter, data):
-        if self.current_calibration_filter is None or self.current_calibration_filter == "":
+    def filter_func(self, model, iter, data):
+        if self.current_filter is None or self.current_filter == "":
             return True
-        elif self.current_calibration_filter in model[iter][self.current_filter_column]:
+        elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]
