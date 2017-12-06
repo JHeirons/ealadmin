@@ -25,12 +25,12 @@ class EquipmentCleanlinessPage:
         self.equipment_store = EquipmentStore()
         self.procedure_store = ProcedureStore()
         
-        self.current_cleanliness_filter = None
+        self.current_filter = None
         
-        self.clean_filter = self.store.full_clean_store.filter_new()
-        self.clean_filter.set_visible_func(self.clean_filter_func)
+        self.filter = self.store.full_clean_store.filter_new()
+        self.filter.set_visible_func(self.filter_func)
     
-        self.clean_treeview = Gtk.TreeView.new_with_model(self.clean_filter)
+        self.clean_treeview = Gtk.TreeView.new_with_model(self.filter)
         self.clean_scroll.add(self.clean_treeview)
         
         self.entries = {"eal_number":"equipment_cleanliness_entry_eal", "pco_number":"equipment_cleanliness_entry_pco", "dew_number":"equipment_cleanliness_entry_dew", "procedure":"equipment_cleanliness_entry_procedure", "clean_location":"equipment_cleanliness_entry_location"}
@@ -163,13 +163,13 @@ class EquipmentCleanlinessPage:
     
     def on_equipment_cleanliness_entry_eal_changed(self, equipment_cleanliness_entry_eal):
         search = equipment_cleanliness_entry_eal.get_text()
-        self.current_cleanliness_filter = search.upper()
+        self.current_filter = search.upper()
         self.current_filter_column = 0
-        print(self.current_cleanliness_filter)
-        self.cleanliness_filter.refilter()
+        print(self.current_filter)
+        self.filter.refilter()
         
-    def clean_filter_func(self, model, iter, data):
-        if self.current_cleanliness_filter is None or self.current_cleanliness_filter == "":
+    def filter_func(self, model, iter, data):
+        if self.current_filter is None or self.current_filter == "":
             return True
-        elif self.current_cleanliness_filter in model[iter][self.current_filter_column]:
+        elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]

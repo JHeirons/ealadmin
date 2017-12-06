@@ -1,6 +1,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from dateutil.relativedelta import *
+from datetime import *
 
 
 class Function:
@@ -52,4 +54,21 @@ class Function:
     def pop_item(self, data):
         self.status_bar.pop(data)
         return
+
+class Cal_Date:
+    def date(self, calander_object):
+        self.builder = Gtk.Builder()
+        calendar = self.builder.get_object(calander_onject)
+        self.get_date = calendar.get_date()
+        self.get_date + relativedelta(months=+1)
+        print (self.get_date)
+        
+    def expiry(self, length):
+        self.expiry = self.get_date + relativedelta(months=+length)
+        return self.expiry
     
+    def recall(self):
+        self.recall = self.expiry - relativedelta(months=+1)
+        return self.recall
+    
+

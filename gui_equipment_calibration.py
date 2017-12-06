@@ -3,7 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function
+from gui_functions import Function, Cal_Date
 import sqlite3
 import shutil
 import os
@@ -56,6 +56,9 @@ class EquipmentCalibrationPage:
         self.treeview.set_model(model=self.store.calibration)
         self.completions()
         print("Refresh")
+        
+    def cal_date(self):
+        Cal_Date.date(self, "equipment_calibration_calendar_date")
         
     def cal_date(self):
         calendar = self.builder.get_object("equipment_calibration_calendar_date")
