@@ -56,19 +56,26 @@ class Function:
         return
 
 class Cal_Date:
-    def date(self, calander_object):
+    def __init__(self):
         self.builder = Gtk.Builder()
-        calendar = self.builder.get_object(calander_onject)
-        self.get_date = calendar.get_date()
-        self.get_date + relativedelta(months=+1)
-        print (self.get_date)
         
-    def expiry(self, length):
-        self.expiry = self.get_date + relativedelta(months=+length)
-        return self.expiry
+    def date(self, calender_object):
+        print ("cal function")
+        calender = self.builder.get_object(calender_object)
+        test_date = calender.get_date()
+        month = test_date.month + 1
+        date_str = str(test_date.day) + '/' + str(month) + '/' + str(test_date.year)
+       
+        cal_date = datetime.strptime(date_str, "%d/%m/%Y").date()
+        return cal_date
+        
+        
+    def expiry(self, initial_date, length):
+        expiry_date = initial_date + relativedelta(months=+length)
+        return expiry_date
     
-    def recall(self):
-        self.recall = self.expiry - relativedelta(months=+1)
-        return self.recall
+    def recall(self, expiry_date):
+        recall_date = expiry_date - relativedelta(months=+1)
+        return recall_date
     
 

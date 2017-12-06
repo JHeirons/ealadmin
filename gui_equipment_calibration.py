@@ -19,7 +19,6 @@ class EquipmentCalibrationPage:
         self.builder.connect_signals(self)
         self.page = self.builder.get_object("equipment_calibration_page")
         self.scroll = self.builder.get_object("equipment_calibration_scroll_window")
-        
         self.store =Store()
         
         self.current_filter = None
@@ -57,33 +56,7 @@ class EquipmentCalibrationPage:
         self.completions()
         print("Refresh")
         
-    def cal_date(self):
-        Cal_Date.date(self, "equipment_calibration_calendar_date")
-        
-    def cal_date(self):
-        calendar = self.builder.get_object("equipment_calibration_calendar_date")
-        get_date = calendar.get_date()
-        month = get_date.month + 1
-        date = str(get_date.day) + '/' + str(month) + '/' + str(get_date.year)
-        select_cal_date = date
-        cal_date = datetime.strptime(select_cal_date, "%d/%m/%Y").date()
-        return cal_date
 
-    def cal_recall(self, cal_type, cal_date):
-        if (cal_type == "Internal"):
-            cal_recall_date = cal_date+timedelta(days=140)
-            cal_recall = cal_recall_date
-        elif(cal_type == "External"):
-            cal_recall_date = cal_date+timedelta(days=323)
-            cal_recall = cal_recall_date
-        else:
-            print("Warning message")
-
-        return cal_recall
-
-    def cal_expiry(self, cal_recall):
-        cal_expiry = cal_recall+timedelta(days=42)
-        return cal_expiry
     
     def on_equipment_calibration_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
@@ -114,14 +87,23 @@ class EquipmentCalibrationPage:
         entries = self.entries
         text = Function.get_entries(self, entries)
         calibration_type = self.type
-        calibration_date = self.cal_date()
-        calibration_recall = self.cal_recall(calibration_type, calibration_date)
-        calibration_expiry = self.cal_expiry(calibration_recall)
         
-        if not os.path.exists('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"]):
-            os.mkdir('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"])
+        
+        calibration_date = Cal_Date.date(self, "equipment_calibration_calendar_date")
+        print(calibration_date)
+        calibration_expiry = Cal_Date.expiry(self, calibration_date, 12)
+        print(calibration_expiry)
+        calibration_recall = Cal_Date.recall(self, calibration_expiry)
+        print(calibration_recall)
+        
+        print(calibration_date, calibration_expiry, calibration_recall)
+        
+        
+        #if not os.path.exists('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"]):
+            #os.mkdir('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"])
             
-        certificate_location = '/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"] + '/' + text["eal_number"] + '_Cal_Cert-' + str(calibration_date) + '.pdf'
+        #certificate_location = '/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"] + '/' + text["eal_number"] + '_Cal_Cert-' + str(calibration_date) + '.pdf'
+        certificate_location = "testing"
         shutil.copy(self.file, certificate_location)
         calibration_certificate = certificate_location
         now = datetime.now()
