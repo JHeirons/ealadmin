@@ -1,9 +1,9 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from gui_liststores import ProofStore, EquipmentStore, ProcedureStore
+from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function
+from gui_functions import Function, Cal_Date
 import sqlite3
 import shutil
 import os
@@ -17,21 +17,18 @@ class EquipmentProofPage:
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_proof.glade")
         self.builder.connect_signals(self)
-        self.go = self.builder.get_object
-        self.page = self.go("equipment_proof_page")
-        self.proof_scroll = self.go("equipment_proof_scroll_window")
+        self.page = self.builder.get_object("equipment_proof_page")
+        self.scroll = self.builder.get_object("equipment_proof_scroll_window")
         
-        self.store = ProofStore()
-        self.equipment_store = EquipmentStore()
-        self.procedure_store = ProcedureStore()
+        self.store = Store()
         
-        self.current_proof_filter = None
+        self.current_filter = None
         
-        self.proof_filter = self.store.full_proof_store.filter_new()
-        self.proof_filter.set_visible_func(self.proof_filter_func)
+        self.filter = self.store.proof.filter_new()
+        self.filter.set_visible_func(self.filter_func)
     
-        self.proof_treeview = Gtk.TreeView.new_with_model(self.proof_filter)
-        self.proof_scroll.add(self.proof_treeview)
+        self.treeview = Gtk.TreeView.new_with_model(self.filter)
+        self.scroll.add(self.treeview)
         
         self.entries = {"eal_number":"equipment_proof_entry_eal", "proof_pressure":"equipment_proof_entry_bar", "proof_duration":"equipment_proof_entry_duration", "pt_number":"equipment_proof_entry_pt", "procedure":"equipment_proof_entry_procedure", "proof_location":"equipment_proof_entry_location"}
         
@@ -42,44 +39,27 @@ class EquipmentProofPage:
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             
-            self.proof_treeview.append_column(self.column)
+            self.treeview.append_column(self.column)
         
-        self.select = self.proof_treeview.get_selection()
+        self.select = self.treeview.get_selection()
         self.select.connect("changed", self.on_equipment_proof_tree_selection_changed)
         self.completions()
     
         
     def completions(self):
-        Function.entry_completion(self, self.equipment_store.full_equipment_store, "equipment_proof_entry_eal", 0)
-        Function.entry_completion(self, self.procedure_store.procedure_store, "equipment_proof_entry_procedure", 0)
+        Function.entry_completion(self, self.store.equipment, "equipment_proof_entry_eal", 0)
+        Function.entry_completion(self, self.store.procedures, "equipment_proof_entry_procedure", 0)
         #Function.entry_completion(self, self.store.company_calibration_store, "equipment_calibration_entry_company", 0)
         
     
     def treeview_refresh(self):
-        self.store.full_proof_store.clear()
-        self.store = ProofStore()
-        self.proof_treeview.set_model(model=self.store.full_proof_store)
+        self.store.proof.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.proof)
         self.completions()
         print("Refresh")
         
-    def date(self):
-        calendar = self.go("equipment_proof_calendar_date")
-        get_date = calendar.get_date()
-        month = get_date.month + 1
-        date = str(get_date.day) + '/' + str(month) + '/' + str(get_date.year)
-        select_cal_date = date
-        proof_date = datetime.strptime(select_cal_date, "%d/%m/%Y").date()
-        return proof_date
-
-    def recall(self, proof_date):
-        proof_recall_date = proof_date+timedelta(days=323)
-        proof_recall = proof_recall_date
-        return proof_recall
-
-    def expiry(self, proof_recall):
-        proof_expiry = proof_recall+timedelta(days=42)
-        return proof_expiry
-    
+   
     def on_equipment_proof_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
         selected = []
@@ -126,9 +106,9 @@ class EquipmentProofPage:
         entries = self.entries
         text = Function.get_entries(self, entries)
         result_type = self.type
-        proof_date = self.date()
-        proof_recall = self.recall(proof_date)
-        proof_expiry = self.expiry(proof_recall)
+        proof_date = Cal_Date.date(self, "equipment_proof_calendar_date")
+        proof_recall = Cal_Date.expiry(self, calibration_date, 12)
+        proof_expiry = Cal_Date.recall(self, calibration_expiry)
         
         if not os.path.exists('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"]):
             os.mkdir('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"])
@@ -156,7 +136,7 @@ class EquipmentProofPage:
         entries = self.entries
         Function.clear_entries(self, entries)
         self.select.unselect_all()
-        self.current_proof_filter = None
+        self.current_filter = None
         print ("Clear")
         
     def on_equipment_proof_file_certificate_file_set(self, equipment_proof_file_certificate):
@@ -166,13 +146,13 @@ class EquipmentProofPage:
     
     def on_equipment_proof_entry_eal_changed(self, equipment_proof_entry_eal):
         search = equipment_proof_entry_eal.get_text()
-        self.current_proof_filter = search.upper()
+        self.current_filter = search.upper()
         self.current_filter_column = 0
-        print(self.current_proof_filter)
-        self.proof_filter.refilter()
+        print(self.current_filter)
+        self.filter.refilter()
         
-    def proof_filter_func(self, model, iter, data):
-        if self.current_proof_filter is None or self.current_proof_filter == "":
+    def filter_func(self, model, iter, data):
+        if self.current_filter is None or self.current_filter == "":
             return True
-        elif self.current_proof_filter in model[iter][self.current_filter_column]:
+        elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]

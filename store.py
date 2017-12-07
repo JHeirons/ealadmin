@@ -15,6 +15,7 @@ class Store():
         self.procedures = self.Procedures()
         self.cleanliness = self.Cleanliness()
         self.proof = self.Proof()
+        self.overview = self.Overview()
         
     def Equipment(self):
         equipment_store = Gtk.ListStore(str, str, str, str, str, str)
@@ -38,8 +39,8 @@ class Store():
         return log_store
     
     def Procedures(self):
-        procedure_store = Gtk.ListStore(str)
-        items = c.execute('SELECT doc_ref FROM procedures') 
+        procedure_store = Gtk.ListStore(str,str, str, int, str, str, str)
+        items = c.execute('SELECT doc_name, doc_ref, doc_client, doc_issue, doc_reason, date, doc_path FROM procedures') 
         for item in items:
             procedure_store.append(list(item))
         return procedure_store
@@ -62,7 +63,7 @@ class Store():
         overview_store = Gtk.ListStore(str, str, str, str, str)
         items = c.execute('''SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_to FROM equipment INNER JOIN cal_overview ON equipment.eal_number == cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number == log_overview.eal_number''')
         
-        for item in item:
+        for item in items:
             overview_store.append(list(item))
         return overview_store
     

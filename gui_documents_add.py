@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-from gui_functions import Function
+from gui_functions import Function, Cal_Date
 from store import Store
 import sqlite3
 
@@ -17,39 +17,36 @@ class DocumentsAddPage:
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/documents.glade")
         self.builder.connect_signals(self)
-        self.go = self.builder.get_object
-        self.page = self.go("documents_add_page")
-        self.scroll = self.go("documents_add_scroll_window")
+        self.page = self.builder.get_object("documents_add_page")
+        self.scroll = self.builder.get_object("documents_add_scroll_window")
         self.store = Store()
 
+        self.current_filter = None
         
-        #self.entries = {"eal_number":"equipment_log_entry_eal", "log_from":"equipment_log_entry_from", "log_to":"equipment_log_entry_to", "procedure":"equipment_log_entry_procedure", "message":"equipment_log_entry_message"}
-        
-        
-        '''self.current_filter = None
-        
-        self.filter = self.store.full_log_store.filter_new()
-        self.filter.set_visible_func(self.log_filter_func)
+        self.filter = self.store.procedures.filter_new()
+        self.filter.set_visible_func(self.filter_func)
     
-        self.log_treeview = Gtk.TreeView.new_with_model(self.log_filter)
-        self.log_scroll.add(self.log_treeview)
+        self.treeview = Gtk.TreeView.new_with_model(self.filter)
+        self.scroll.add(self.treeview)
+        
+        self.entries = {"doc_for":"documents_add_entry_for", "doc_ref":"documents_add_entry_ref", "doc_name":"documents_add_entry_name", "doc_issue":"documents_add_entry_issue", "issue_reason":"documents_add_entry_reason"}
         
         
-        for i, column_title in enumerate(["EAL Number", "Log Date", "Going From", "Going To", "Procedure", "Message"]):
+        for i, column_title in enumerate(["Name", "Reference", "Client", "Issue", "Reason for Issue", "Date", "File"]):
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
-            self.log_treeview.append_column(self.column)
+            self.treeview.append_column(self.column)
         
-        select = self.log_treeview.get_selection()
-        select.connect("changed", self.on_equipment_log_tree_selection_changed)
+        select = self.treeview.get_selection()
         
-        Function.entry_completion(self, self.equipment.full_equipment_store, "equipment_log_entry_eal", 0)
-        Function.entry_completion(self, self.procedure.procedure_store, "equipment_log_entry_procedure", 0)
+        select.connect("changed", self.on_documents_add_tree_selection_changed)
         
-    def on_equipment_log_button_enter_clicked(self, equipment_log_button_enter):
+        
+        
+    def on_documents_add_button_enter_clicked(self, documents_add_button_enter):
         entries = self.entries
-        entered_text = Function.get_entries(self, entries)
-        log_date = self.log_date()
+        text = Function.get_entries(self, entries)
+        date = Cal_Date.date(self, "documents_add_calendar_date")
         now = datetime.now()
 
         c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], log_date, entered_text["log_from"], entered_text["log_to"], entered_text["procedure"], entered_text["message"]))
@@ -59,13 +56,13 @@ class DocumentsAddPage:
         Function.clear_entries(self, entries)
         print(text)
         
-    def on_equipment_log_button_clear_clicked(self, equipment_log_button_clear):
+    def on_documents_add_button_clear_clicked(self, documents_add_button_clear):
         entries = self.entries
         Function.clear_entries(self, entries)
         print("Clear")
         
     
-    def on_equipment_log_tree_selection_changed(self, selection):
+    def on_documents_add_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
         self.selected = {}
         for path in pathlist :
@@ -83,25 +80,17 @@ class DocumentsAddPage:
             selected_values = list(self.selected.values())
             Function.set_entries(self, self.entries, selected_values)
             
-    def log_date(self):
-        calendar = self.go("equipment_log_calendar_date")
-        get_date = calendar.get_date()
-        print (get_date.month)
-        date = str(get_date.day) + '/' + str(get_date.month) + '/' + str(get_date.year)
-        select_log_date = date
-        log_date = datetime.strptime(select_log_date, "%d/%m/%Y").date()
-        return log_date
     
     def treeview_refresh(self):
-        self.store.full_log_store.clear()
-        self.store = LogStore()
-        self.log_treeview.set_model(model=self.store.full_log_store)
+        self.store.procedures.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.procedures)
         #self.completions()
         print("Refresh")
     
-    def on_equipment_log_entry_eal_changed(self, entry):
+    def on_documents_add_entry_eal_changed(self, entry):
         search = entry.get_text()
-        self.currentfilter = search.upper()
+        self.current_filter = search.upper()
         print(self.current_filter)
         self.filter.refilter()
         
@@ -109,4 +98,4 @@ class DocumentsAddPage:
         if self.current_filter is None or self.current_filter == "":
             return True
         elif self.current_filter in model[iter][0]:
-            return model[iter][0]'''
+            return model[iter][0]

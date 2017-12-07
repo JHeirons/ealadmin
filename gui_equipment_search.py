@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from time import sleep
-from gui_liststores import OverviewStore
+from store import Store
 import sqlite3
 import csv 
 
@@ -16,14 +16,15 @@ class EquipmentSearchPage:
         self.builder.add_from_file("Glade/equipment_search.glade")
         self.builder.connect_signals(self)
         self.go = self.builder.get_object
-        self.page = self.go("equipment_search_page")
-        self.store = OverviewStore()
+        self.page = self.builder.get_object("equipment_search_page")
+        self.store = Store()
+        
         self.treeview = self.go("equipment_search_tree_view")
         #self.current_filter = None
         #self.filter = self.store.overview_store.filter_new()
         #self.filter.set_visible_func(self.filter_func)
         
-        self.treeview.set_model(model=self.store.overview_store)
+        self.treeview.set_model(model=self.store.overview)
         #self.treeview = self.get_treeview.new_with_model(self.language_filter)
         
         for i, column_title in enumerate(["EAL Number", "Equipment Type", "Serial Number", "Calibration Expiry", "Current Location"]):
@@ -49,9 +50,9 @@ class EquipmentSearchPage:
         
     def treeview_refresh(self):
         
-        self.store.overview_store.clear()
-        self.store = OverviewStore()
-        self.treeview.set_model(model=self.store.overview_store)
+        self.store.overview.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.overview)
         
         #self.completions()
         print("Refresh")

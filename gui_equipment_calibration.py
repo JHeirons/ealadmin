@@ -21,7 +21,7 @@ class EquipmentCalibrationPage:
         self.scroll = self.builder.get_object("equipment_calibration_scroll_window")
         self.store =Store()
         
-        self.filter = None
+        self.current_filter = None
         
         self.filter = self.store.calibration.filter_new()
         self.filter.set_visible_func(self.filter_func)
