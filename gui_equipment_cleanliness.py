@@ -1,9 +1,9 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from gui_liststores import CleanlinessStore, ProcedureStore, EquipmentStore
+from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function
+from gui_functions import Function, Cal_Date
 import sqlite3
 import shutil
 import os
@@ -17,21 +17,17 @@ class EquipmentCleanlinessPage:
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_cleanliness.glade")
         self.builder.connect_signals(self)
-        self.go = self.builder.get_object
-        self.page = self.go("equipment_cleanliness_page")
-        self.clean_scroll = self.go("equipment_cleanliness_scroll_window")
+        self.page = self.builder.get_object("equipment_cleanliness_page")
+        self.scroll = self.builder.get_object("equipment_cleanliness_scroll_window")
+        self.store = Store()
         
-        self.store = CleanlinessStore()
-        self.equipment_store = EquipmentStore()
-        self.procedure_store = ProcedureStore()
+        self.current_filter = None
         
-        self.current_cleanliness_filter = None
-        
-        self.clean_filter = self.store.full_clean_store.filter_new()
-        self.clean_filter.set_visible_func(self.clean_filter_func)
+        self.filter = self.store.cleanliness.filter_new()
+        self.filter.set_visible_func(self.filter_func)
     
-        self.clean_treeview = Gtk.TreeView.new_with_model(self.clean_filter)
-        self.clean_scroll.add(self.clean_treeview)
+        self.treeview = Gtk.TreeView.new_with_model(self.filter)
+        self.scroll.add(self.treeview)
         
         self.entries = {"eal_number":"equipment_cleanliness_entry_eal", "pco_number":"equipment_cleanliness_entry_pco", "dew_number":"equipment_cleanliness_entry_dew", "procedure":"equipment_cleanliness_entry_procedure", "clean_location":"equipment_cleanliness_entry_location"}
         
@@ -42,43 +38,25 @@ class EquipmentCleanlinessPage:
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             
-            self.clean_treeview.append_column(self.column)
+            self.treeview.append_column(self.column)
         
-        self.select = self.clean_treeview.get_selection()
+        self.select = self.treeview.get_selection()
         self.select.connect("changed", self.on_equipment_clean_tree_selection_changed)
         self.completions()
     
         
     def completions(self):
-        Function.entry_completion(self, self.equipment_store.full_equipment_store, "equipment_cleanliness_entry_eal", 0)
-        #Function.entry_completion(self, self.procedure_store.procedure_store, "equipment_clanliness_entry_procedure", 0)
-        #Function.entry_completion(self, self.store.company_calibration_store, "equipment_calibration_entry_company", 0)
-        
+        Function.entry_completion(self, self.store.cleanliness, "equipment_cleanliness_entry_eal", 0)
+        #procedure, dew and pco completions
+
     
     def treeview_refresh(self):
-        self.store.full_clean_store.clear()
-        self.store = CleanlinessStore()
-        self.clean_treeview.set_model(model=self.store.full_clean_store)
+        self.store.cleanliness.clear()
+        self.store = Store()
+        self.treeview.set_model(model=self.store.cleanliness)
         self.completions()
         print("Refresh")
         
-    def date(self):
-        calendar = self.go("equipment_cleanliness_calendar_date")
-        get_date = calendar.get_date()
-        month = get_date.month + 1
-        date = str(get_date.day) + '/' + str(month) + '/' + str(get_date.year)
-        select_cal_date = date
-        clean_date = datetime.strptime(select_cal_date, "%d/%m/%Y").date()
-        return clean_date
-
-    def recall(self, clean_date):
-        clean_recall_date = clean_date+timedelta(days=323)
-        clean_recall = clean_recall_date
-        return clean_recall
-
-    def expiry(self, clean_recall):
-        clean_expiry = clean_recall+timedelta(days=42)
-        return clean_expiry
     
     def on_equipment_clean_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
@@ -123,9 +101,11 @@ class EquipmentCleanlinessPage:
         entries = self.entries
         text = Function.get_entries(self, entries)
         result_type = self.type
-        clean_date = self.date()
-        clean_recall = self.recall(clean_date)
-        clean_expiry = self.expiry(clean_recall)
+        clean_date = Cal_Date.date(self, "equipment_cleanliness_calendar_date")
+        clean_expiry = Cal_Date.expiry(self, calibration_date, length)
+        clean_recall = Cal_Date.recall(self, calibration_expiry)
+        
+        print(clean_date, clean_expiry, clean_recall)
         
         if not os.path.exists('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"]):
             os.mkdir('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"])
@@ -153,7 +133,7 @@ class EquipmentCleanlinessPage:
         entries = self.entries
         Function.clear_entries(self, entries)
         self.select.unselect_all()
-        self.current_cleanliness_filter = None
+        self.current_filter = None
         print ("Clear")
         
     def on_equipment_cleanliness_file_certificate_file_set(self, equipment_cleanliness_file_certificate):
@@ -163,13 +143,13 @@ class EquipmentCleanlinessPage:
     
     def on_equipment_cleanliness_entry_eal_changed(self, equipment_cleanliness_entry_eal):
         search = equipment_cleanliness_entry_eal.get_text()
-        self.current_cleanliness_filter = search.upper()
+        self.current_filter = search.upper()
         self.current_filter_column = 0
-        print(self.current_cleanliness_filter)
-        self.cleanliness_filter.refilter()
+        print(self.current_filter)
+        self.filter.refilter()
         
-    def clean_filter_func(self, model, iter, data):
-        if self.current_cleanliness_filter is None or self.current_cleanliness_filter == "":
+    def filter_func(self, model, iter, data):
+        if self.current_filter is None or self.current_filter == "":
             return True
-        elif self.current_cleanliness_filter in model[iter][self.current_filter_column]:
+        elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]

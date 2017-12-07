@@ -1,15 +1,16 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from dateutil.relativedelta import *
+from datetime import *
 
 
 class Function:
     def __init__(self):
         self.builder = Gtk.Builder()
-        self.go = self.builder.get_object
         
     def get_entry(self, entry):
-        entry_to_get = self.go(entry)
+        entry_to_get = self.builder.get_object(entry)
         entry_text = entry_to_get.get_text()
         return entry_text
     
@@ -22,7 +23,7 @@ class Function:
         return entered_text
     
     def set_entry(self, entry, text):
-        entry_to_set = self.go(entry)
+        entry_to_set = self.builder.get_object(entry)
         set_text = entry_to_set.set_text(text)
         return text
         
@@ -39,7 +40,7 @@ class Function:
     
     
     def entry_completion(self, model, entry, column):
-        entry_to_complete = self.go(entry)
+        entry_to_complete = self.builder.get_object(entry)
         completion = Gtk.EntryCompletion()
         completion.set_model(model)
         entry_to_complete.set_completion(completion)
@@ -53,4 +54,28 @@ class Function:
     def pop_item(self, data):
         self.status_bar.pop(data)
         return
+
+class Cal_Date:
+    def __init__(self):
+        self.builder = Gtk.Builder()
+        
+    def date(self, calender_object):
+        print ("cal function")
+        calender = self.builder.get_object(calender_object)
+        test_date = calender.get_date()
+        month = test_date.month + 1
+        date_str = str(test_date.day) + '/' + str(month) + '/' + str(test_date.year)
+       
+        cal_date = datetime.strptime(date_str, "%d/%m/%Y").date()
+        return cal_date
+        
+        
+    def expiry(self, initial_date, length):
+        expiry_date = initial_date + relativedelta(months=+length)
+        return expiry_date
     
+    def recall(self, expiry_date):
+        recall_date = expiry_date - relativedelta(months=+1)
+        return recall_date
+    
+
