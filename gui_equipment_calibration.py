@@ -21,7 +21,7 @@ class EquipmentCalibrationPage:
         self.scroll = self.builder.get_object("equipment_calibration_scroll_window")
         self.store =Store()
         
-        self.current_filter = None
+        self.filter = None
         
         self.filter = self.store.calibration.filter_new()
         self.filter.set_visible_func(self.filter_func)
@@ -79,19 +79,21 @@ class EquipmentCalibrationPage:
     
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
         self.type = "External"
+        self.length = 12
     
     def on_equipment_calibration_radio_internal_toggled(self, equipment_calibration_radio_internal):
         self.type = "Internal"
+        self.length = 6
     
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
         entries = self.entries
         text = Function.get_entries(self, entries)
         calibration_type = self.type
-        
+        length = self.length
         
         calibration_date = Cal_Date.date(self, "equipment_calibration_calendar_date")
         print(calibration_date)
-        calibration_expiry = Cal_Date.expiry(self, calibration_date, 12)
+        calibration_expiry = Cal_Date.expiry(self, calibration_date, length)
         print(calibration_expiry)
         calibration_recall = Cal_Date.recall(self, calibration_expiry)
         print(calibration_recall)
@@ -128,7 +130,7 @@ class EquipmentCalibrationPage:
         entries = self.entries
         Function.clear_entries(self, entries)
         self.select.unselect_all()
-        self.current_calibration_filter = None
+        self.current_filter = None
         print ("Clear")
         
     def on_equipment_calibration_file_certificate_file_set(self, equipment_calibration_file_certificate):
