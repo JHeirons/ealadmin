@@ -79,17 +79,22 @@ class EquipmentCalibrationPage:
     
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
         self.type = "External"
-        self.length = 12
     
     def on_equipment_calibration_radio_internal_toggled(self, equipment_calibration_radio_internal):
         self.type = "Internal"
-        self.length = 6
     
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
         entries = self.entries
         text = Function.get_entries(self, entries)
         calibration_type = self.type
-        length = self.length
+        if (calibration_type == "External"):
+            length = 12
+        elif (calibration_type == "Internal"):
+            length = 6
+        else:
+            length = 12
+            
+        print(length)
         
         calibration_date = Cal_Date.date(self, "equipment_calibration_calendar_date")
         print(calibration_date)
@@ -100,12 +105,11 @@ class EquipmentCalibrationPage:
         
         print(calibration_date, calibration_expiry, calibration_recall)
         
-        
-        #if not os.path.exists('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"]):
-            #os.mkdir('/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"])
+        folder_path = '//EALSERVER/Jonathan Folder/Admin_Test/'
+        if not os.path.exists(folder_path + text["eal_number"]):
+            os.mkdir(folder_path + text["eal_number"])
             
-        #certificate_location = '/Users/Home/Documents/Cal_Cert_Test/' + text["eal_number"] + '/' + text["eal_number"] + '_Cal_Cert-' + str(calibration_date) + '.pdf'
-        certificate_location = "testing"
+        certificate_location = folder_path + text["eal_number"] + '/' + text["eal_number"] + '_Cal_Cert-' + str(calibration_date) + '.pdf'
         shutil.copy(self.file, certificate_location)
         calibration_certificate = certificate_location
         now = datetime.now()
