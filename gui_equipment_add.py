@@ -2,15 +2,10 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-#from gui_liststores import EquipmentStore
-from gui_functions import Function
+from gui_functions import Function, Db
 from store import Store
-import sqlite3
-
-db = sqlite3.connect("admin.db")
-#db = sqlite3.connect("http://ealserver/Jonathan Folder/admin.db")
-c = db.cursor()
-
+import mysql.connector
+conn = Db.conn()
 
 class EquipmentAddPage:
     def __init__(self):
@@ -76,62 +71,96 @@ class EquipmentAddPage:
             Function.set_entries(self, self.entries, selected_values)
         
     def on_equipment_add_button_add_clicked(self, equipment_add_button_add):
+        curr = conn.cursor()
+        
         entries = self.entries
         entered_text = Function.get_entries(self, entries)
         
         print (entered_text['eal_number'], entered_text["equipment_type"], entered_text["manufacturer"], entered_text["model"], entered_text["serial_number"])
         now = datetime.now()
         
-        c.execute("INSERT INTO equipment (created_at, eal_number, equipment_type, manufacturer, model, pressure, serial_number) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], entered_text["equipment_type"], entered_text["manufacturer"], entered_text["model"], entered_text["pressure"], entered_text["serial_number"]))
+        equip_query = ("INSERT INTO equipment (created_at, eal_number, equipment_type, manufacturer, model, pressure, serial_number) VALUES (%s,%s,%s,%s,%s,%s,%s);")
+        equip_values = (now, entered_text['eal_number'], entered_text["equipment_type"], entered_text["manufacturer"], entered_text["model"], entered_text["pressure"], entered_text["serial_number"])
+        
+        curr.execute(equip_query, equip_values)
         
         location = 'Westcott'
         procedure = 'N/A'
-        calibration_message = entered_text['eal_number'] + ' added to equipment store'
+        message = entered_text['eal_number'] + ' added to equipment store'
         
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], now, location, location, procedure, calibration_message))
-    
-        db.commit()
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
+        
+        curr.execute(log_query, log_values)
+        conn.commit()
+        curr.close()
+        
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Add")
         
     def on_equipment_add_button_remove_clicked(self, equipment_add_button_remove):
+        curr = conn.cursor()
         
-        c.execute("DELETE FROM equipment WHERE eal_number = ?", (self.selected["eal_number"],))
+        del_query = ("DELETE FROM equipment WHERE eal_number = %s") 
+        del_values = (self.selected["eal_number"],)
+        
+        curr.execute(del_query, del_values)
         
         now = datetime.now()
         location = 'Westcott'
         procedure = 'N/A'
-        calibration_message = self.eal_number + ' removed from equipment store'
+        message = self.eal_number + ' removed from equipment store'
         
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, self.selected["eal_number"], now, location, location, procedure, calibration_message))
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
-        db.commit()
+        curr.execute(log_query, log_values)
+        conn.commit()
+        curr.close()
+        
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Remove")
         
         
     def on_equipment_add_button_update_clicked(self, equipment_add_button_update):
-        
+        curr = conn.cursor()
         entries = self.entries
         entered_text = Function.get_entries(self, entries)
         now = datetime.now()
         
-        c.execute("UPDATE equipment SET created_at = ? WHERE eal_number = ?", (now, entered_text['eal_number'],))
-        c.execute("UPDATE equipment SET equipment_type = ? WHERE eal_number = ?", (entered_text['equipment_type'], entered_text['eal_number'],))
-        c.execute("UPDATE equipment SET manufacturer = ? WHERE eal_number = ?", (entered_text['manufacturer'], entered_text['eal_number'],))
-        c.execute("UPDATE equipment SET model = ? WHERE eal_number = ?", (entered_text['model'], entered_text['eal_number'],))
-        c.execute("UPDATE equipment SET pressure = ? WHERE eal_number = ?", (entered_text['pressure'], entered_text['eal_number'],))
-        c.execute("UPDATE equipment SET serial_number = ? WHERE eal_number = ?", (entered_text['serial_number'], entered_text['eal_number'],))
+        update1 = ("UPDATE equipment SET created_at = %s WHERE eal_number = %s") 
+        values1 = (now, entered_text['eal_number'],)
+        update2 = ("UPDATE equipment SET equipment_type = %s WHERE eal_number = %s") 
+        values2 = (entered_text['equipment_type'], entered_text['eal_number'],)
+        update3 = ("UPDATE equipment SET manufacturer = %s WHERE eal_number = %s") 
+        values3 = (entered_text['manufacturer'], entered_text['eal_number'],)
+        update4 = ("UPDATE equipment SET model = %s WHERE eal_number = %s") 
+        values4 =(entered_text['model'], entered_text['eal_number'],)
+        update5 = ("UPDATE equipment SET pressure = %s WHERE eal_number = %s") 
+        values5 =(entered_text['pressure'], entered_text['eal_number'],)
+        update6 = ("UPDATE equipment SET serial_number = %s WHERE eal_number = %s") 
+        values6 = (entered_text['serial_number'], entered_text['eal_number'],)
+        
+        curr.execute(update1, values1)
+        curr.execute(update2, values2)
+        curr.execute(update3, values3)
+        curr.execute(update4, values4)
+        curr.execute(update5, values5)
+        curr.execute(update6, values6)
         
         location = 'Westcott'
         procedure = 'N/A'
-        calibration_message = entered_text['eal_number'] + ' updated info'
+        message = entered_text['eal_number'] + ' updated info'
         
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], now, location, location, procedure, calibration_message))
-    
-        db.commit()
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
+        
+        curr.execute(log_query, log_values)
+        conn.commit()
+        curr.close()
+        
         Function.clear_entries(self, entries)
         self.treeview_refresh()
     

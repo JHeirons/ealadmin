@@ -3,14 +3,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function, Cal_Date
-import sqlite3
+from gui_functions import Function, Cal_Date, Db
 import shutil
 import os
+import mysql.connector
 
-db = sqlite3.connect("admin.db")
-c = db.cursor()
-c.execute("""PRAGMA foreign_keys = 1""")
+conn = Db.conn()
 
 class EquipmentCleanlinessPage:
     def __init__(self):
@@ -115,16 +113,23 @@ class EquipmentCleanlinessPage:
         clean_certificate = certificate_location
         now = datetime.now()
         
-       # print (text["eal_number"], text["calibration_company"], calibration_type, calibration_certificate, calibration_date, calibration_recall, calibration_expiry)
         
-        clean_message = "Cleanliness & Dryness certificate added."
+        message = "Cleanliness & Dryness certificate added."
         
-        c.execute("INSERT INTO clean (eal_number, created_at, pco_number, dew_number, procedure, clean_date, clean_recall, clean_expiry, clean_location, clean_result, clean_certificate) VALUES (?,?,?,?,?,?,?,?,?,?,?);", (text["eal_number"], now, text["pco_number"], text["dew_number"], text["procedure"], clean_date, clean_recall, clean_expiry, text["clean_location"], result_type, clean_certificate))
+        curr = conn.cursor()
         
+        clean_query = ("INSERT INTO clean (eal_number, created_at, pco_number, dew_number, procedure, clean_date, clean_recall, clean_expiry, clean_location, clean_result, clean_certificate) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);") 
+        clean_values = (text["eal_number"], now, text["pco_number"], text["dew_number"], text["procedure"], clean_date, clean_recall, clean_expiry, text["clean_location"], result_type, clean_certificate)
         
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, text['eal_number'], now, text["clean_location"], text["clean_location"], text["procedure"], clean_message))
+        curr.execute(clean_query, clean_values)
+        
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
+        
+        curr.execute(log_query, log_values)
     
-        db.commit()
+        conn.commit()
+        curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Add")

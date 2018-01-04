@@ -3,12 +3,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
 from store import Store
-from gui_functions import Function, Cal_Date
-import sqlite3
+from gui_functions import Function, Cal_Date, Db
+import mysql.connector
 
-db = sqlite3.connect("admin.db")
-c = db.cursor()
-c.execute("""PRAGMA foreign_keys = 1""")
+conn = Db.conn()
 
 
 class EquipmentLogPage:
@@ -33,7 +31,7 @@ class EquipmentLogPage:
         self.scroll.add(self.treeview)
         
         
-        for i, column_title in enumerate(["EAL Number", "Log Date", "Going From", "Going To", "Procedure", "Message"]):
+        for i, column_title in enumerate(["EAL Number", "Log Date", "Location", "Procedure", "Message"]):
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(self.column)
@@ -49,10 +47,15 @@ class EquipmentLogPage:
         entered_text = Function.get_entries(self, entries)
         log_date = Cal_Date.date(self, "equipment_log_calendar_date")
         now = datetime.now()
-
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], log_date, entered_text["log_from"], entered_text["log_to"], entered_text["procedure"], entered_text["message"]))
+        curr = conn.cursor()
     
-        db.commit()
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], log_date, entered_text["log_from"], entered_text["procedure"], entered_text["message"])
+        
+        curr.execute(log_query, log_values)
+    
+        conn.commit()
+        curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         

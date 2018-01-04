@@ -2,15 +2,11 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-from gui_functions import Function, Cal_Date
+from gui_functions import Function, Cal_Date, Db
 from store import Store
-import sqlite3
+import mysql.connector
 
-db = sqlite3.connect("admin.db")
-#db = sqlite3.connect("http://ealserver/Jonathan Folder/admin.db")
-c = db.cursor()
-
-
+conn = Db.conn()
 
 class DocumentsAddPage:
     def __init__(self):
@@ -44,14 +40,18 @@ class DocumentsAddPage:
         
         
     def on_documents_add_button_enter_clicked(self, documents_add_button_enter):
+        curr = conn.cursor()
         entries = self.entries
         text = Function.get_entries(self, entries)
         date = Cal_Date.date(self, "documents_add_calendar_date")
         now = datetime.now()
-
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, entered_text['eal_number'], log_date, entered_text["log_from"], entered_text["log_to"], entered_text["procedure"], entered_text["message"]))
-    
-        db.commit()
+        
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], log_date, entered_text["log_to"], entered_text["procedure"], entered_text["message"])
+        
+        curr.execute(log_query, log_values)
+        conn.commit()
+        curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print(text)

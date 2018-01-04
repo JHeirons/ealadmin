@@ -3,14 +3,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function, Cal_Date
-import sqlite3
+from gui_functions import Function, Cal_Date, Db
+import mysql.connector
 import shutil
 import os
 
-db = sqlite3.connect("admin.db")
-c = db.cursor()
-c.execute("""PRAGMA foreign_keys = 1""")
+conn = Db.conn()
 
 class EquipmentCalibrationPage:
     def __init__(self):
@@ -42,7 +40,6 @@ class EquipmentCalibrationPage:
         self.select = self.treeview.get_selection()
         self.select.connect("changed", self.on_equipment_calibration_tree_selection_changed)
         self.completions()
-    
         
     def completions(self):
         Function.entry_completion(self, self.store.calibration, "equipment_calibration_entry_eal", 0)
@@ -55,8 +52,6 @@ class EquipmentCalibrationPage:
         self.treeview.set_model(model=self.store.calibration)
         self.completions()
         print("Refresh")
-        
-
     
     def on_equipment_calibration_tree_selection_changed(self, selection):
         (model, pathlist) = selection.get_selected_rows()
@@ -75,8 +70,6 @@ class EquipmentCalibrationPage:
             self.selected.append(self.calibration_certificate)
             Function.set_entries(self, self.entries, self.selected)
         
-        
-    
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
         self.type = "External"
     
@@ -84,6 +77,8 @@ class EquipmentCalibrationPage:
         self.type = "Internal"
     
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
+        curr = conn.cursor()
+        
         entries = self.entries
         text = Function.get_entries(self, entries)
         calibration_type = self.type
@@ -116,16 +111,21 @@ class EquipmentCalibrationPage:
         
         print (text["eal_number"], text["calibration_company"], calibration_type, calibration_certificate, calibration_date, calibration_recall, calibration_expiry)
         
-        calibration_message = "Calibration certificate added."
+        message = "Calibration certificate added."
         location = "Westcott"
         procedure = "N/A"
         
-        c.execute("INSERT INTO calibration (eal_number, created_at, cal_comp, cal_type, cal_date, cal_recall, cal_expiry, cal_cert) VALUES (?,?,?,?,?,?,?,?);", (text["eal_number"], now, text["calibration_company"], calibration_type, calibration_date, calibration_recall, calibration_expiry, calibration_certificate))
+        cal_query = ("INSERT INTO calibration (eal_number, created_at, cal_comp, cal_type, cal_date, cal_recall, cal_expiry, cal_cert) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);") 
+        cal_values = (text["eal_number"], now, text["calibration_company"], calibration_type, calibration_date, calibration_recall, calibration_expiry, calibration_certificate)
+        curr.execute(cal_query, cal_values)
         
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, text['eal_number'], now, location, location, procedure, calibration_message))
-    
-        db.commit()
+        curr.execute(log_query, log_values)
+        conn.commit()
+        curr.close()
+        
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Add")

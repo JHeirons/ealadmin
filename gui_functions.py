@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from dateutil.relativedelta import *
 from datetime import *
+import mysql.connector
 
 
 class Function:
@@ -78,4 +79,13 @@ class Cal_Date:
         recall_date = expiry_date - relativedelta(months=+1)
         return recall_date
     
-
+class Db:
+    
+    def conn():
+        conn = mysql.connector.connect(
+        user = 'jonathan', 
+        password = 'HP224AZ',
+        host='192.168.0.107',
+        database='eal_admin')
+        return conn
+ 

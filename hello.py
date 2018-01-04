@@ -1,8 +1,8 @@
 import mysql.connector
 
 conn = mysql.connector.connect(
-user = 'root', 
-password = 'Astr0t3ch!',
+user = 'jonathan', 
+password = 'HP224AZ',
 host='192.168.0.107',
 database='eal_test')
 
@@ -17,3 +17,8 @@ for (id, name, model) in curr:
     
 curr.close()
 conn.close()
+
+
+
+
+

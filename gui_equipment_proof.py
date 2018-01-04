@@ -3,14 +3,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from store import Store
 from datetime import date, datetime, timedelta
-from gui_functions import Function, Cal_Date
-import sqlite3
+from gui_functions import Function, Cal_Date, Db
 import shutil
 import os
+import mysql.connector
 
-db = sqlite3.connect("admin.db")
-c = db.cursor()
-c.execute("""PRAGMA foreign_keys = 1""")
+conn = Db.conn()
 
 class EquipmentProofPage:
     def __init__(self):
@@ -121,13 +119,20 @@ class EquipmentProofPage:
        # print (text["eal_number"], text["calibration_company"], calibration_type, calibration_certificate, calibration_date, calibration_recall, calibration_expiry)
         
         proof_message = "Proof certificate added."
+        curr = conn.cursor()
         
-        c.execute("INSERT INTO proof (eal_number, created_at, proof_pressure, proof_duration, pt_number, procedure, proof_date, proof_recall, proof_expiry, proof_location, proof_result, proof_certificate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);", (text["eal_number"], now, text["proof_pressure"], text["proof_duration"], text["pt_number"], text["procedure"], proof_date, proof_recall, proof_expiry, text["proof_location"], result_type, proof_certificate))
+        proof_query = ("INSERT INTO proof (eal_number, created_at, proof_pressure, proof_duration, pt_number, procedure, proof_date, proof_recall, proof_expiry, proof_location, proof_result, proof_certificate) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);") 
+        proof_values = (text["eal_number"], now, text["proof_pressure"], text["proof_duration"], text["pt_number"], text["procedure"], proof_date, proof_recall, proof_expiry, text["proof_location"], result_type, proof_certificate)
         
-        
-        c.execute("INSERT INTO logbook (created_at, eal_number, log_date, log_from, log_to, procedure, message) VALUES (?,?,?,?,?,?,?);", (now, text['eal_number'], now, text["proof_location"], text["proof_location"], text["procedure"], proof_message))
+        curr.execute(proof_query, proof_values)
     
-        db.commit()
+        log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
+        log_values = (now, text['eal_number'], log_date, text["proof_location"], text["procedure"], proof_message)
+        
+        curr.execute(log_query, log_values)
+    
+        conn.commit()
+        curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Add")

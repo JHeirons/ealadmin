@@ -3,12 +3,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from time import sleep
 from store import Store
-import sqlite3
-import csv 
+from gui_functions import Db
+import mysql.connector
 
-db = sqlite3.connect("admin.db")
-c = db.cursor()
-
+conn = Db.conn()
 
 class EquipmentSearchPage:
     def __init__(self):
@@ -41,13 +39,14 @@ class EquipmentSearchPage:
     
     
     def on_equipment_search_button_export_clicked(self, equipment_search_button_export):
+        curr = conn.cursor()
         with open('overview.csv', 'w', newline='') as f:
             writer = csv.writer(f)
-            for row in c.execute('''SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_to FROM equipment INNER JOIN cal_overview ON equipment.eal_number == cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number == log_overview.eal_number'''):
+            for row in curr.execute('''SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_to FROM equipment INNER JOIN cal_overview ON equipment.eal_number == cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number == log_overview.eal_number'''):
                 data = ",".join([str(i) for i in row])
                 print(data)
                 writer.writerow(data)
-        
+        curr.close()
     def treeview_refresh(self):
         
         self.store.overview.clear()
