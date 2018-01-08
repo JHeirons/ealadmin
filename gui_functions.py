@@ -31,6 +31,7 @@ class Function:
     def set_entries(self, entries, text):
         set_entries = {}
         for i, entry in enumerate(entries):
+            print(entry)
             set_entries[entry] = Function.set_entry(self, entries[entry], text[i])
         return set_entries
     
@@ -80,12 +81,12 @@ class Cal_Date:
         return recall_date
     
 class Db:
-    
-    def conn():
+    def login_conn(username, p):
         conn = mysql.connector.connect(
-        user = 'jonathan', 
-        password = 'HP224AZ',
-        host='192.168.0.107',
+        user = username, 
+        password = p,
+        host='192.168.0.103',
         database='eal_admin')
+        print("Success")
         return conn
- 
+    

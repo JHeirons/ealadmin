@@ -6,20 +6,18 @@ from gui_functions import Function, Cal_Date, Db
 from store import Store
 import mysql.connector
 
-conn = Db.conn()
-
 class DocumentsAddPage:
-    def __init__(self):
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/documents.glade")
         self.builder.connect_signals(self)
         self.page = self.builder.get_object("documents_add_page")
         self.scroll = self.builder.get_object("documents_add_scroll_window")
-        self.store = Store()
-
+        self.store = Store.Procedures(self, conn)
+        self.conn = conn
         self.current_filter = None
         
-        self.filter = self.store.procedures.filter_new()
+        self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
     
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
@@ -40,7 +38,7 @@ class DocumentsAddPage:
         
         
     def on_documents_add_button_enter_clicked(self, documents_add_button_enter):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         entries = self.entries
         text = Function.get_entries(self, entries)
         date = Cal_Date.date(self, "documents_add_calendar_date")
@@ -50,7 +48,7 @@ class DocumentsAddPage:
         log_values = (now, entered_text['eal_number'], log_date, entered_text["log_to"], entered_text["procedure"], entered_text["message"])
         
         curr.execute(log_query, log_values)
-        conn.commit()
+        self.conn.commit()
         curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)
@@ -82,9 +80,9 @@ class DocumentsAddPage:
             
     
     def treeview_refresh(self):
-        self.store.procedures.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.procedures)
+        self.store.clear()
+        self.store = Store.Procedures(self, self.conn)
+        self.treeview.set_model(model=self.store)
         #self.completions()
         print("Refresh")
     

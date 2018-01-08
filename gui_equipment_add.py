@@ -5,23 +5,22 @@ from datetime import date, datetime
 from gui_functions import Function, Db
 from store import Store
 import mysql.connector
-conn = Db.conn()
 
-class EquipmentAddPage:
-    def __init__(self):
+class EquipmentAddPage():
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_add.glade")
         self.builder.connect_signals(self)
         self.go = self.builder.get_object
         self.page = self.go("equipment_add_page")
         self.scroll = self.go("equipment_add_scroll_window")
-        self.store = Store()
+        self.conn = conn
+        self.store = Store.Equipment(self, conn)
         
         self.current_filter = None
         
-        self.filter = self.store.equipment.filter_new()
+        self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
-    
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
         self.scroll.add(self.treeview)
         
@@ -33,27 +32,32 @@ class EquipmentAddPage:
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(self.column)
         
+        
+        
         self.select = self.treeview.get_selection()
         self.select.connect("changed", self.on_equipment_add_tree_selection_changed)
-        
+         
         self.completions()  
         
             
     def treeview_refresh(self):
-        self.store.equipment.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.equipment)
+        self.store.clear()
+        self.store = Store.Equipment(self, self.conn)
+        self.treeview.set_model(model=self.store)
         self.completions()
         
         print("Refresh")
         
     def completions(self):
-        Function.entry_completion(self, self.store.equipment, "equipment_add_entry_eal", 0)
-        self.store_type = Store.Completion(self, "equipment_type", "equipment")
+        Function.entry_completion(self, self.store, "equipment_add_entry_eal", 0)
+        
+        self.store_type = Store.Completion(self, self.conn, "equipment_type", "equipment")
         Function.entry_completion(self, self.store_type, "equipment_add_entry_type", 0)
-        self.store_manufacturer = Store.Completion(self, "manufacturer", "equipment")
+        
+        self.store_manufacturer = Store.Completion(self, self.conn, "manufacturer", "equipment")
         Function.entry_completion(self, self.store_manufacturer, "equipment_add_entry_manufacturer", 0)
-        self.store_model = Store.Completion(self, "model", "equipment")
+        
+        self.store_model = Store.Completion(self, self.conn, "model", "equipment")
         Function.entry_completion(self, self.store_model, "equipment_add_entry_model", 0)
     
     def on_equipment_add_tree_selection_changed(self, selection):
@@ -65,13 +69,13 @@ class EquipmentAddPage:
             self.selected['equipment_type'] = model.get_value(tree_iter,1)
             self.selected['manufacturer'] = model.get_value(tree_iter,2)
             self.selected['model'] = model.get_value(tree_iter,3)
-            self.selected['pressure'] = model.get_value(tree_iter,4)
+            self.selected['pressure'] = str(model.get_value(tree_iter,4))
             self.selected['serial_number'] = model.get_value(tree_iter,5)
             selected_values = list(self.selected.values())
             Function.set_entries(self, self.entries, selected_values)
         
     def on_equipment_add_button_add_clicked(self, equipment_add_button_add):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         
         entries = self.entries
         entered_text = Function.get_entries(self, entries)
@@ -92,7 +96,7 @@ class EquipmentAddPage:
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
         curr.execute(log_query, log_values)
-        conn.commit()
+        self.conn.commit()
         curr.close()
         
         self.treeview_refresh()
@@ -100,7 +104,7 @@ class EquipmentAddPage:
         print ("Add")
         
     def on_equipment_add_button_remove_clicked(self, equipment_add_button_remove):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         
         del_query = ("DELETE FROM equipment WHERE eal_number = %s") 
         del_values = (self.selected["eal_number"],)
@@ -116,7 +120,7 @@ class EquipmentAddPage:
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
         curr.execute(log_query, log_values)
-        conn.commit()
+        self.conn.commit()
         curr.close()
         
         self.treeview_refresh()
@@ -125,7 +129,7 @@ class EquipmentAddPage:
         
         
     def on_equipment_add_button_update_clicked(self, equipment_add_button_update):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         entries = self.entries
         entered_text = Function.get_entries(self, entries)
         now = datetime.now()
@@ -158,7 +162,7 @@ class EquipmentAddPage:
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
         curr.execute(log_query, log_values)
-        conn.commit()
+        self.conn.commit()
         curr.close()
         
         Function.clear_entries(self, entries)
@@ -172,31 +176,35 @@ class EquipmentAddPage:
         
         print ("Clear")
     
-    def on_equipment_add_entry_eal_changed(self, equipment_add_entry_eal):
-        search = equipment_add_entry_eal.get_text() 
+    def on_equipment_add_entry_eal_changed(self, entry):
+        search = entry.get_text() 
         self.current_filter = search.upper()
         self.current_filter_column = 0
+        print(self.current_filter_column)
         print(self.current_filter)
         self.filter.refilter()
         
-    def on_equipment_add_entry_type_changed(self, equipment_add_entry_type):
-        search = equipment_add_entry_type.get_text()
+    def on_equipment_add_entry_type_changed(self, entry):
+        search = entry.get_text()
         self.current_filter = search 
         self.current_filter_column = 1
+        print(self.current_filter_column)
         print(self.current_filter)
         self.filter.refilter()
         
-    def on_equipment_add_entry_manufacturer_changed(self, equipment_add_entry_manufacturer):
-        search = equipment_add_entry_manufacturer.get_text()
+    def on_equipment_add_entry_manufacturer_changed(self, entry):
+        search = entry.get_text()
         self.current_filter = search 
         self.current_filter_column = 2
+        print(self.current_filter_column)
         print(self.current_filter)
         self.filter.refilter()
     
-    def on_equipment_add_entry_model_changed(self, equipment_add_entry_model):
-        search = equipment_add_entry_model.get_text()
+    def on_equipment_add_entry_model_changed(self, entry):
+        search = entry.get_text()
         self.current_filter = search
         self.current_filter_column = 3
+        print(self.current_filter_column)
         print(self.current_filter)
         self.filter.refilter()
         

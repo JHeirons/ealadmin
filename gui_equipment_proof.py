@@ -8,21 +8,19 @@ import shutil
 import os
 import mysql.connector
 
-conn = Db.conn()
-
 class EquipmentProofPage:
-    def __init__(self):
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_proof.glade")
         self.builder.connect_signals(self)
         self.page = self.builder.get_object("equipment_proof_page")
         self.scroll = self.builder.get_object("equipment_proof_scroll_window")
-        
-        self.store = Store()
+        self.store = Store.Proof(self, conn)
+        self.conn = conn
         
         self.current_filter = None
         
-        self.filter = self.store.proof.filter_new()
+        self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
     
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
@@ -45,15 +43,15 @@ class EquipmentProofPage:
     
         
     def completions(self):
-        Function.entry_completion(self, self.store.equipment, "equipment_proof_entry_eal", 0)
-        Function.entry_completion(self, self.store.procedures, "equipment_proof_entry_procedure", 0)
+        Function.entry_completion(self, Store.Equipment(self, self.conn), "equipment_proof_entry_eal", 0)
+        Function.entry_completion(self, Store.Procedures(self, self.conn), "equipment_proof_entry_procedure", 0)
         #Function.entry_completion(self, self.store.company_calibration_store, "equipment_calibration_entry_company", 0)
         
     
     def treeview_refresh(self):
-        self.store.proof.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.proof)
+        self.store.clear()
+        self.store = Store.Proof(self, self.conn)
+        self.treeview.set_model(model=self.store)
         self.completions()
         print("Refresh")
         
@@ -119,7 +117,7 @@ class EquipmentProofPage:
        # print (text["eal_number"], text["calibration_company"], calibration_type, calibration_certificate, calibration_date, calibration_recall, calibration_expiry)
         
         proof_message = "Proof certificate added."
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         
         proof_query = ("INSERT INTO proof (eal_number, created_at, proof_pressure, proof_duration, pt_number, procedure, proof_date, proof_recall, proof_expiry, proof_location, proof_result, proof_certificate) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);") 
         proof_values = (text["eal_number"], now, text["proof_pressure"], text["proof_duration"], text["pt_number"], text["procedure"], proof_date, proof_recall, proof_expiry, text["proof_location"], result_type, proof_certificate)
@@ -131,7 +129,7 @@ class EquipmentProofPage:
         
         curr.execute(log_query, log_values)
     
-        conn.commit()
+        self.conn.commit()
         curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)

@@ -3,8 +3,8 @@ import mysql.connector
 conn = mysql.connector.connect(
 user = 'jonathan', 
 password = 'HP224AZ',
-host='192.168.0.107',
-database='eal_test')
+host='192.168.0.103',
+database='eal_admin')
 
 curr = conn.cursor()
 
@@ -12,8 +12,9 @@ query = ("SELECT * FROM equipment")
 
 curr.execute(query)
 
-for (id, name, model) in curr:
-    print ("{}, {}, {}".format(id, name, model))
+items = curr.fetchall()
+for item in items:
+    print (item)
     
 curr.close()
 conn.close()

@@ -8,20 +8,20 @@ import mysql.connector
 import shutil
 import os
 
-conn = Db.conn()
+
 
 class EquipmentCalibrationPage:
-    def __init__(self):
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_calibration.glade")
         self.builder.connect_signals(self)
         self.page = self.builder.get_object("equipment_calibration_page")
         self.scroll = self.builder.get_object("equipment_calibration_scroll_window")
-        self.store =Store()
-        
+        self.store = Store.Calibration(self, conn)
+        self.conn = conn
         self.current_filter = None
         
-        self.filter = self.store.calibration.filter_new()
+        self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
     
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
@@ -42,14 +42,14 @@ class EquipmentCalibrationPage:
         self.completions()
         
     def completions(self):
-        Function.entry_completion(self, self.store.calibration, "equipment_calibration_entry_eal", 0)
-        self.store_company = Store.Completion(self, "cal_comp", "calibration")
+        Function.entry_completion(self, self.store, "equipment_calibration_entry_eal", 0)
+        self.store_company = Store.Completion(self, self.conn, "cal_comp", "calibration")
         Function.entry_completion(self, self.store_company, "equipment_calibration_entry_company", 0)
     
     def treeview_refresh(self):
-        self.store.calibration.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.calibration)
+        self.store.clear()
+        self.store = Store.Calibration(self, self.conn)
+        self.treeview.set_model(model=self.store)
         self.completions()
         print("Refresh")
     
@@ -77,7 +77,7 @@ class EquipmentCalibrationPage:
         self.type = "Internal"
     
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         
         entries = self.entries
         text = Function.get_entries(self, entries)
@@ -120,15 +120,16 @@ class EquipmentCalibrationPage:
         curr.execute(cal_query, cal_values)
         
         log_query = ("INSERT INTO logbook (created_at, eal_number, log_date, log_location, log_procedure, message) VALUES (%s,%s,%s,%s,%s,%s);")
-        log_values = (now, entered_text['eal_number'], now, location, procedure, message)
+        log_values = (now, text['eal_number'], now, location, procedure, message)
         
         curr.execute(log_query, log_values)
-        conn.commit()
-        curr.close()
+        self.conn.commit()
+        
         
         self.treeview_refresh()
         Function.clear_entries(self, entries)
         print ("Add")
+        curr.close()
     
     def on_equipment_calibration_button_clear_clicked(self, equipment_calibration_button_clear):
         entries = self.entries

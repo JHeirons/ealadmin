@@ -8,20 +8,19 @@ import shutil
 import os
 import mysql.connector
 
-conn = Db.conn()
 
 class EquipmentCleanlinessPage:
-    def __init__(self):
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_cleanliness.glade")
         self.builder.connect_signals(self)
         self.page = self.builder.get_object("equipment_cleanliness_page")
         self.scroll = self.builder.get_object("equipment_cleanliness_scroll_window")
-        self.store = Store()
-        
+        self.store = Store.Cleanliness(self, conn)
+        self.conn = conn
         self.current_filter = None
         
-        self.filter = self.store.cleanliness.filter_new()
+        self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
     
         self.treeview = Gtk.TreeView.new_with_model(self.filter)
@@ -44,14 +43,14 @@ class EquipmentCleanlinessPage:
     
         
     def completions(self):
-        Function.entry_completion(self, self.store.cleanliness, "equipment_cleanliness_entry_eal", 0)
+        Function.entry_completion(self, self.store, "equipment_cleanliness_entry_eal", 0)
         #procedure, dew and pco completions
 
     
     def treeview_refresh(self):
-        self.store.cleanliness.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.cleanliness)
+        self.store.clear()
+        self.store = Store.Cleanliness(self, self.conn)
+        self.treeview.set_model(model=self.store)
         self.completions()
         print("Refresh")
         
@@ -116,7 +115,7 @@ class EquipmentCleanlinessPage:
         
         message = "Cleanliness & Dryness certificate added."
         
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         
         clean_query = ("INSERT INTO clean (eal_number, created_at, pco_number, dew_number, procedure, clean_date, clean_recall, clean_expiry, clean_location, clean_result, clean_certificate) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);") 
         clean_values = (text["eal_number"], now, text["pco_number"], text["dew_number"], text["procedure"], clean_date, clean_recall, clean_expiry, text["clean_location"], result_type, clean_certificate)
@@ -128,7 +127,7 @@ class EquipmentCleanlinessPage:
         
         curr.execute(log_query, log_values)
     
-        conn.commit()
+        self.conn.commit()
         curr.close()
         self.treeview_refresh()
         Function.clear_entries(self, entries)

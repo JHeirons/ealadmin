@@ -6,23 +6,22 @@ from store import Store
 from gui_functions import Db
 import mysql.connector
 
-conn = Db.conn()
-
 class EquipmentSearchPage:
-    def __init__(self):
+    def __init__(self, conn):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/equipment_search.glade")
         self.builder.connect_signals(self)
         self.go = self.builder.get_object
         self.page = self.builder.get_object("equipment_search_page")
-        self.store = Store()
+        self.store = Store.Overview(self, conn)
+        self.conn = conn
         
         self.treeview = self.go("equipment_search_tree_view")
         #self.current_filter = None
-        #self.filter = self.store.overview_store.filter_new()
+        #self.filter = self.store_store.filter_new()
         #self.filter.set_visible_func(self.filter_func)
         
-        self.treeview.set_model(model=self.store.overview)
+        self.treeview.set_model(model=self.store)
         #self.treeview = self.get_treeview.new_with_model(self.language_filter)
         
         for i, column_title in enumerate(["EAL Number", "Equipment Type", "Serial Number", "Calibration Expiry", "Current Location"]):
@@ -31,15 +30,11 @@ class EquipmentSearchPage:
             self.column.set_sort_column_id(i)
             self.treeview.append_column(self.column)
         
-    
-        
     def test(self):
         print("test")
         
-    
-    
     def on_equipment_search_button_export_clicked(self, equipment_search_button_export):
-        curr = conn.cursor()
+        curr = self.conn.cursor()
         with open('overview.csv', 'w', newline='') as f:
             writer = csv.writer(f)
             for row in curr.execute('''SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_to FROM equipment INNER JOIN cal_overview ON equipment.eal_number == cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number == log_overview.eal_number'''):
@@ -47,11 +42,12 @@ class EquipmentSearchPage:
                 print(data)
                 writer.writerow(data)
         curr.close()
+        
     def treeview_refresh(self):
         
-        self.store.overview.clear()
-        self.store = Store()
-        self.treeview.set_model(model=self.store.overview)
+        self.store.clear()
+        self.store = Store.Overview(self, self.conn)
+        self.treeview.set_model(model=self.store)
         
         #self.completions()
         print("Refresh")
