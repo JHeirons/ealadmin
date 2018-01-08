@@ -3,7 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from time import sleep
 from store import Store
-from gui_functions import Db
+
 import mysql.connector
 
 class EquipmentSearchPage:

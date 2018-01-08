@@ -3,7 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
 from store import Store
-from gui_functions import Function, Cal_Date, Db
+from gui_functions import Function, Cal_Date
 import mysql.connector
 
 class EquipmentLogPage:

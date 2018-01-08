@@ -79,14 +79,5 @@ class Cal_Date:
     def recall(self, expiry_date):
         recall_date = expiry_date - relativedelta(months=+1)
         return recall_date
-    
-class Db:
-    def login_conn(username, p):
-        conn = mysql.connector.connect(
-        user = username, 
-        password = p,
-        host='192.168.0.103',
-        database='eal_admin')
-        print("Success")
-        return conn
+
     

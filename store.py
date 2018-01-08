@@ -2,22 +2,10 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import datetime
-from gui_functions import Db
 import mysql.connector
 
-#conn = Db.conn()
-#curr = conn.cursor()
-
 class Store():
-    #def __init__(self):
-        #self.equipment = self.Equipment()
-        #self.calibration = self.Calibration()
-        #self.logbook = self.Logbook()
-        #self.procedures = self.Procedures()
-        #self.cleanliness = self.Cleanliness()
-        #self.proof = self.Proof()
-        #self.overview = self.Overview()
-        
+
     def Equipment(self, conn):
         curr = conn.cursor()
         equipment_store = Gtk.ListStore(str, str, str, str, int, str)

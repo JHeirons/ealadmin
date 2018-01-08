@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from datetime import date, datetime
-from gui_functions import Function, Db
+from gui_functions import Function
 from store import Store
 import mysql.connector
 

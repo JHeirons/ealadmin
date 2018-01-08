@@ -7,10 +7,17 @@ from gui_equipment_calibration import EquipmentCalibrationPage
 from gui_equipment_proof import EquipmentProofPage
 from gui_equipment_cleanliness import EquipmentCleanlinessPage
 from gui_equipment_log import EquipmentLogPage
-from gui_functions import Function, Db
+from gui_functions import Function
 from gui_documents_add import DocumentsAddPage
 from time import sleep
+import mysql.connector
 
+dbConfig = {
+    'user' : '',
+    'password' : '',
+    'host' : '192.168.0.103',
+    'database' : 'eal_admin'
+}
            
 class Main:
     def __init__(self):
@@ -43,21 +50,20 @@ class Main:
         user = Function.get_entry(self, "login_username")
         p_word = Function.get_entry(self, "login_password")
         error = self.builder.get_object("warning_label")
-        login_details = {"username":user, "password":p_word}
+        dbConfig['user'] = user
+        dbConfig['password'] = p_word
         
-        if login_details["username"] != 'jonathan':
-            print(login_details["username"])
-            error.set_label("Username or Pasword Inncorrect")
-            
-        elif login_details["username"] == 'jonathan':
-            self.conn = Db.login_conn(login_details["username"], login_details["password"])
-            print(login_details["username"])
-            print("Login button pressed ")
-            error.set_label("Success")
+        try:
+            self.conn = mysql.connector.connect(**dbConfig)
             self.page_connections(self.conn)
             self.login.destroy()
             sleep(1)
             self.main.show_all()
+            
+        except mysql.connector.Error as err:
+            error.set_label("Error occured: {}".format(err))
+        
+        
     
     def page_connections(self, conn):
         self.equipment_add_page = EquipmentAddPage(conn)
@@ -98,11 +104,9 @@ class Main:
         #self.equipment_log_page.treeview_refresh()
     
     def on_cancel_button_clicked(self, cancel_button):
-        self.conn.close()
         Gtk.main_quit()
     
     def on_login_delete_event(self, *args):
-        self.conn.close()
         Gtk.main_quit(*args)
 
     def on_main_delete_event(self, *args):
