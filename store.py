@@ -13,8 +13,6 @@ class Store():
         items = curr.fetchall()
         for item in items:
             equipment_store.append(list(item))
-            
-        print(equipment_store)
         return equipment_store
         
     

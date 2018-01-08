@@ -4,6 +4,8 @@ from gi.repository import Gtk
 from dateutil.relativedelta import *
 from datetime import *
 import mysql.connector
+import shutil
+import os
 
 
 class Function:
@@ -31,7 +33,6 @@ class Function:
     def set_entries(self, entries, text):
         set_entries = {}
         for i, entry in enumerate(entries):
-            print(entry)
             set_entries[entry] = Function.set_entry(self, entries[entry], text[i])
         return set_entries
     
@@ -56,6 +57,22 @@ class Function:
     def pop_item(self, data):
         self.status_bar.pop(data)
         return
+    
+    def file_path(self, dept_folder, sub_folder, name, file_format):
+        slash = '/'
+        dot = '.'
+        path_root = '//EALSERVER/Jonathan Folder/Admin_Test/'
+        #check path existance
+        dept_folder_path = path_root + dept_folder 
+        folder_path = dept_folder_path + slash + sub_folder
+        if not os.path.exists(dept_folder_path):
+            os.mkdir(dept_folder_path)
+            if not os.path.exists(folder_path):
+                os.mkdir(folder_path)
+        
+        full_path = folder_path + slash + name + dot + file_format
+        
+        return full_path
 
 class Cal_Date:
     def __init__(self):

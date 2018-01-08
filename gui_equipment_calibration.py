@@ -100,11 +100,9 @@ class EquipmentCalibrationPage:
         
         print(calibration_date, calibration_expiry, calibration_recall)
         
-        folder_path = '//EALSERVER/Jonathan Folder/Admin_Test/'
-        if not os.path.exists(folder_path + text["eal_number"]):
-            os.mkdir(folder_path + text["eal_number"])
-            
-        certificate_location = folder_path + text["eal_number"] + '/' + text["eal_number"] + '_Cal_Cert-' + str(calibration_date) + '.pdf'
+        
+        file_name = text["eal_number"] + '_Cal_Cert-' + str(calibration_date)
+        certificate_location = Function.file_path(self, 'QA_Calibration_Certificates', text["eal_number"], file_name, 'pdf')
         shutil.copy(self.file, certificate_location)
         calibration_certificate = certificate_location
         now = datetime.now()

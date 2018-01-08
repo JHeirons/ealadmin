@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from time import sleep
 from store import Store
+import csv
 
 import mysql.connector
 
@@ -37,10 +38,10 @@ class EquipmentSearchPage:
         curr = self.conn.cursor()
         with open('overview.csv', 'w', newline='') as f:
             writer = csv.writer(f)
-            for row in curr.execute('''SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_to FROM equipment INNER JOIN cal_overview ON equipment.eal_number == cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number == log_overview.eal_number'''):
-                data = ",".join([str(i) for i in row])
-                print(data)
-                writer.writerow(data)
+            curr.execute('SELECT equipment.eal_number, equipment_type, serial_number, cal_expiry, log_location FROM equipment INNER JOIN cal_overview ON equipment.eal_number = cal_overview.eal_number INNER JOIN log_overview ON equipment.eal_number = log_overview.eal_number')
+            rows = curr.fetchall()
+            for row in rows:
+                writer.writerow(row)
         curr.close()
         
     def treeview_refresh(self):
