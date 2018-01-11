@@ -4,10 +4,10 @@ from gi.repository import Gtk, Gdk, GObject
 import mysql.connector
 
 dbConfig = {
-    'user' : 'jonathan',
-    'password' : 'HP224AZ',
-    'host' : '192.168.0.103',
-    'database' : 'eal_test'
+    'user' : '',
+    'password' : '',
+    'host' : '',
+    'database' : ''
 }
 
 
