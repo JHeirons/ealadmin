@@ -5,9 +5,9 @@ import mysql.connector
 import numpy as np
 
 dbConfig = {
-    'user' : 'jonathan',
-    'password' : 'HP224AZ',
-    'host' : '192.168.0.103',
+    'user' : 'root',
+    'password' : 'Password',
+    'host' : '127.0.0.1',
     'database' : 'eal_admin'
 }
 
