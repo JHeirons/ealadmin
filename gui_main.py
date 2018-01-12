@@ -13,8 +13,8 @@ from time import sleep
 import mysql.connector
 
 dbConfig = {
-    'user' : '',
-    'password' : '',
+    'user' : 'test_user',
+    'password' : 'eal123',
     'host' : '192.168.0.103',
     'database' : 'eal_admin'
 }
