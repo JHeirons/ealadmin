@@ -5,17 +5,10 @@ import mysql.connector
 import numpy as np
 
 dbConfig = {
-<<<<<<< HEAD
-    'user' : 'jonathan',
-    'password' : 'HP224AZ',
-    'host' : '192.168.0.103',
-    'database' : 'eal_test'
-=======
     'user' : '',
     'password' : '',
-    'host' : '',
+    'host' : '127.0.0.1',
     'database' : 'eal_admin'
->>>>>>> a9d5e652300d5701164564231406cfb1db55890a
 }
 
 class Store:
@@ -52,24 +45,8 @@ class Queries:
         curr.execute(query, values)
         self.conn.commit()
         curr.close()
-<<<<<<< HEAD
-        conn.close()
-        return store
-    
-    def insert(name, model):
-        conn = mysql.connector.connect(**dbConfig)
-        curr = conn.cursor()
-        print("Button Clicked")
-        query = ("INSERT INTO equipment (name, model) VALUES (%s,%s);")
-        values = (name, model)
-        
-        curr.execute(query, values)
-        conn.commit()
-        curr.close()
-=======
         
 
->>>>>>> a9d5e652300d5701164564231406cfb1db55890a
 
 class Main:
     def __init__(self):
@@ -78,13 +55,9 @@ class Main:
         self.builder.connect_signals(self)
         self.window = self.builder.get_object("window1")
         self.scroll = self.builder.get_object("scrolledwindow1")
-<<<<<<< HEAD
-        
-=======
         self.current_items = 'test'
         self.conn = mysql.connector.connect(**dbConfig)
         self.queries = Queries()
->>>>>>> a9d5e652300d5701164564231406cfb1db55890a
         self.current_filter = None
         
         self.store = Gtk.ListStore(str, str, str, str, int, str)
@@ -131,14 +104,9 @@ class Main:
     def on_button1_clicked(self, button1):
         name = self.get_entry("entry1")
         model = 'test'
-<<<<<<< HEAD
-        print(name, model)
-        Store.insert(name, model)
-=======
         cquery = self.queries.equipment["insert"]
         values = (name, name)
         self.queries.query(query, values)
->>>>>>> a9d5e652300d5701164564231406cfb1db55890a
         
     def on_button2_clicked(self, button2):
         name = self.get_entry("entry1")
@@ -164,7 +132,8 @@ class Main:
         elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]
     
-    def on_window1_delete_event(self, *args):s
+    def on_window1_delete_event(self, *args):
+        self.conn.close()
         Gtk.main_quit(*args)
 
 if __name__ == "__main__":
