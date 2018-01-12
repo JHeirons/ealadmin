@@ -1,20 +1,15 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, GObject
+
 import mysql.connector
 import numpy as np
 
 dbConfig = {
-<<<<<<< HEAD
-    'user' : 'jonathan',
-    'password' : 'HP224AZ',
-    'host' : '192.168.0.103',
-=======
 
     'user' : '',
     'password' : '',
     'host' : '',
->>>>>>> 25302d0006d7bb93d616c95011a3f5d244d47ffd
     'database' : 'eal_admin'
 }
 
@@ -52,21 +47,22 @@ class Queries:
         curr.execute(query, values)
         self.conn.commit()
         curr.close()
-        
 
-
-class Main:
-    def __init__(self):
+class Widget:
+    def __init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("Glade/mysql_test.glade")
+        self.builder.add_from_file(glade_file)
         self.builder.connect_signals(self)
-        self.window = self.builder.get_object("window1")
-        self.scroll = self.builder.get_object("scrolledwindow1")
-        self.current_items = None
-        self.queries = Queries()
-        self.current_filter = None
+        self.widget = self.builder.get_object(widget_id)
+        self.scroll = self.builder.get_object(widget_scroll_id)
         
-        self.store = Gtk.ListStore(str, str, str, str, int, str)
+        self.current_items = None
+        self.current_filter = None
+        self.query = timer_query
+        
+        self.store = store_setup #Gtk.ListStore(str)
+        self.columns = column_numbers
+        
         self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
         self.filter_view = Gtk.TreeModel.sort_new_with_model(self.filter)
@@ -75,22 +71,21 @@ class Main:
         self.tree_selection.connect("changed", self.onSelectionChanged)
         self.scroll.add(self.treeview)
         
-        column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
         for i, column_title in enumerate(column_headings):
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.column.set_sort_column_id(i)
             self.treeview.append_column(self.column)
             
-        self.window.show_all()
+        self.widget.show_all()
         
     def timer(self):
-        GObject.timeout_add(1000, self.build)
+        GObject.timeout_add(1000, self.timer_func)
         
-    def build(self):
+    def timer_func(self):
         s = self.store
-        query = self.queries.equipment["select"]
-        new_items = Store.get(query)
+        #query = self.queries.equipment["select"]
+        new_items = Store.get(self.query)
         
         comparison = Store.compare(self.current_items, new_items)
         
@@ -104,8 +99,31 @@ class Main:
         (model, pathlist) = tree_selection.get_selected_rows()
         for path in pathlist :
             tree_iter = model.get_iter(path)
-            value = model.get(tree_iter,0,1,2,3,4,5)
-            print (value)
+            c = self.columns
+            self.row = []
+            for i in c:
+                value = model.get_value(tree_iter,c[i])
+                self.row.append(value)
+            print(self.row)
+            
+    def filter_func(self, model, iter, data):
+        if self.current_filter is None or self.current_filter == "":
+            return True
+        elif self.current_filter in model[iter][self.current_filter_column]:
+            return model[iter][self.current_filter_column]
+        
+class Test(Widget):
+    def __init__(self, queries):
+        glade_file = "Glade/mysql_test.glade"
+        widget_id = "window1"
+        widget_scroll_id = "scrolledwindow1"
+        timer_query = queries.equipment["select"]
+        store_setup = Gtk.ListStore(str, str, str, str, int, str)
+        column_numbers = (0,1,2,3,4,5)
+        column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
+        
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings)
+        self.queries = queries
         
     def on_button1_clicked(self, button1):
         name = self.get_entry("entry1")
@@ -132,19 +150,12 @@ class Main:
         entry_text = entry_to_get.get_text()
         return entry_text
     
-    def filter_func(self, model, iter, data):
-        if self.current_filter is None or self.current_filter == "":
-            return True
-        elif self.current_filter in model[iter][self.current_filter_column]:
-            return model[iter][self.current_filter_column]
-    
     def on_window1_delete_event(self, *args):
         Gtk.main_quit(*args)
-
+        
 if __name__ == "__main__":
-    
-    main = Main()
+    queries = Queries()
+    main = Test(queries)
     main.timer()
-    
     
     Gtk.main()
