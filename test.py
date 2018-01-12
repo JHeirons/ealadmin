@@ -5,9 +5,9 @@ import mysql.connector
 import numpy as np
 
 dbConfig = {
-    'user' : '',
-    'password' : '',
-    'host' : '',
+    'user' : 'jonathan',
+    'password' : 'HP224AZ',
+    'host' : '192.168.0.103',
     'database' : 'eal_admin'
 }
 
@@ -104,7 +104,7 @@ class Main:
     def on_button1_clicked(self, button1):
         name = self.get_entry("entry1")
         model = 'test'
-        cquery = self.queries.equipment["insert"]
+        query = self.queries.equipment["insert"]
         values = (name, name)
         self.queries.query(query, values)
         
