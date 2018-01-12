@@ -4,10 +4,10 @@ from gi.repository import Gtk, Gdk, GObject
 import mysql.connector
 
 dbConfig = {
-    'user' : '',
-    'password' : '',
-    'host' : '',
-    'database' : ''
+    'user' : 'jonathan',
+    'password' : 'HP224AZ',
+    'host' : '192.168.0.103',
+    'database' : 'eal_test'
 }
 
 
@@ -29,6 +29,17 @@ class Store:
         curr.close()
         conn.close()
         return store
+    
+    def insert(name, model):
+        conn = mysql.connector.connect(**dbConfig)
+        curr = conn.cursor()
+        print("Button Clicked")
+        query = ("INSERT INTO equipment (name, model) VALUES (%s,%s);")
+        values = (name, model)
+        
+        curr.execute(query, values)
+        conn.commit()
+        curr.close()
 
 class Main:
     def __init__(self):
@@ -37,8 +48,6 @@ class Main:
         self.builder.connect_signals(self)
         self.window = self.builder.get_object("window1")
         self.scroll = self.builder.get_object("scrolledwindow1")
-        
-        self.conn = mysql.connector.connect(**dbConfig)
         
         self.current_filter = None
         s = Gtk.ListStore(str, str)
@@ -71,14 +80,7 @@ class Main:
         name = self.get_entry("entry1")
         model = 'test'
         print(name, model)
-        curr = self.conn.cursor()
-        print("Button Clicked")
-        query = ("INSERT INTO equipment (name, model) VALUES (%s,%s);")
-        values = (name, model)
-        
-        curr.execute(query, values)
-        self.conn.commit()
-        curr.close()
+        Store.insert(name, model)
         
     def on_button2_clicked(self, button2):
         print("button 2")
@@ -103,8 +105,7 @@ class Main:
         elif self.current_filter in model[iter][self.current_filter_column]:
             return model[iter][self.current_filter_column]
     
-    def on_window1_delete_event(self, *args):
-        self.conn.close()
+    def on_window1_delete_event(self, *args):s
         Gtk.main_quit(*args)
 
 if __name__ == "__main__":
