@@ -4,7 +4,7 @@ from gi.repository import Gtk
 from dateutil.relativedelta import *
 from datetime import *
 import mysql.connector
-import shutil
+
 import os
 
 
@@ -15,6 +15,7 @@ class Function:
     def get_entry(self, entry):
         entry_to_get = self.builder.get_object(entry)
         entry_text = entry_to_get.get_text()
+        print(entry_text)
         return entry_text
     
     def get_entries(self, entries):
@@ -61,14 +62,13 @@ class Function:
     def file_path(self, dept_folder, sub_folder, name, file_format):
         slash = '/'
         dot = '.'
-        path_root = '//EALSERVER/Jonathan Folder/Admin_Test/'
+        #path_root = '//EALSERVER/Jonathan Folder/Admin_Test/'
+        path_root = "Documents/Programming/Brackets/ealadmin/"
         #check path existance
         dept_folder_path = path_root + dept_folder 
         folder_path = dept_folder_path + slash + sub_folder
-        if not os.path.exists(dept_folder_path):
-            os.mkdir(dept_folder_path)
-            if not os.path.exists(folder_path):
-                os.mkdir(folder_path)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         
         full_path = folder_path + slash + name + dot + file_format
         

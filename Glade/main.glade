@@ -391,6 +391,7 @@
                   <object class="GtkEntry" id="login_username">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="can_default">True</property>
                     <property name="invisible_char">●</property>
                     <property name="input_purpose">name</property>
                     <signal name="changed" handler="on_login_username_changed" swapped="no"/>
@@ -429,6 +430,7 @@
                   <object class="GtkEntry" id="login_password">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="visibility">False</property>
                     <property name="invisible_char">●</property>
                     <property name="input_purpose">password</property>
                     <signal name="changed" handler="on_login_password_changed" swapped="no"/>
