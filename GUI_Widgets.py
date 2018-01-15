@@ -515,7 +515,7 @@ class EquipSearch(Widget):
 class Confirm:
     def __init__(self, queries, query, values):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("Glade/main.glade")
+        self.builder.add_from_file("Glade/confirm.glade")
         self.builder.connect_signals(self)
         self.confirm = self.builder.get_object("confirm")
         self.confirm.show()
@@ -525,7 +525,7 @@ class Confirm:
         msg = self.builder.get_object("confirm_label")
         msg.set_label("You are about to add {}".format(self.values))
         
-    def on_confirm_button_clicked(self, login_button):
+    def on_confirm_button_clicked(self, confirm_button):
         self.queries.query(self.query, self.values)
         self.confirm.destroy()
         

@@ -10,7 +10,7 @@ from gui_functions import Function, Cal_Date
 dbConfig = {
             'user' : '',
             'password' : '',
-            'host' : '127.0.0.1',
+            'host' : '192.168.0.103',
             'database' : 'eal_admin'
             }
         
