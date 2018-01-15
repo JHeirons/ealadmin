@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.18"/>
   <object class="GtkWindow" id="main">
@@ -181,8 +180,8 @@
               <object class="GtkLabel" id="documents_add">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Add</property>
                 <property name="yalign">0.49000000953674316</property>
+                <property name="label" translatable="yes">Add</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -293,78 +292,6 @@
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-  </object>
-  <object class="GtkDialog" id="confirm">
-    <property name="can_focus">False</property>
-    <property name="modal">True</property>
-    <property name="window_position">center-on-parent</property>
-    <property name="type_hint">dialog</property>
-    <property name="gravity">center</property>
-    <property name="transient_for">main</property>
-    <signal name="delete-event" handler="on_confirm_delete_event" swapped="no"/>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialg_vbox11">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="dialog-action_area11">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="confirm_button">
-                <property name="label" translatable="yes">Confirm</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_confirm_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="confirm_cancel_button">
-                <property name="label" translatable="yes">Cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_confirm_cancel_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="confirm_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
   <object class="GtkDialog" id="login">
@@ -542,8 +469,5 @@
       <action-widget response="0">login_button</action-widget>
       <action-widget response="0">cancel_button</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

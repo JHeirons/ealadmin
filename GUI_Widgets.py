@@ -4,14 +4,16 @@ from gi.repository import Gtk, GObject
 from gui_functions import Function, Cal_Date
 import shutil
 from datetime import date, datetime, timedelta
+#from GUI_Admin import Main
 
 class Widget:
-    def __init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func):
+    def __init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent):
         self.builder = Gtk.Builder()
         self.builder.add_from_file(glade_file)
         self.builder.connect_signals(self)
         self.widget = self.builder.get_object(widget_id)
         self.scroll = self.builder.get_object(widget_scroll_id)
+        self.confirm = Confirm(parent)
         
         self.current_items = None
         self.current_filter = None
@@ -75,7 +77,7 @@ class Widget:
         
         
 class DocAdd(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/documents.glade"
         widget_id = "documents_add_page"
         widget_scroll_id = "documents_add_scroll_window"
@@ -84,7 +86,7 @@ class DocAdd(Widget):
         column_numbers = (0,1,2,3,4,5,6)
         column_headings = ["Name", "Reference", "Client", "Issue", "Reason for Issue", "Date", "File"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.entries = {"doc_for":"documents_add_entry_for", "doc_ref":"documents_add_entry_ref", "doc_name":"documents_add_entry_name", "doc_issue":"documents_add_entry_issue", "issue_reason":"documents_add_entry_reason"}
         
@@ -121,7 +123,7 @@ class DocAdd(Widget):
         Gtk.main_quit(*args)
 
 class Log(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_log.glade"
         widget_id = "equipment_log_page"
         widget_scroll_id = "equipment_log_scroll_window"
@@ -130,7 +132,7 @@ class Log(Widget):
         column_numbers = (0,1,2,3,4)
         column_headings = ["EAL Number", "Log Date", "Location", "Procedure", "Message"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.entries = {"eal_number":"equipment_log_entry_eal", "log_location":"equipment_log_entry_from", "procedure":"equipment_log_entry_procedure", "message":"equipment_log_entry_message"}
         
@@ -165,7 +167,7 @@ class Log(Widget):
     
 #Do Remove/Update and Completions
 class EquipAdd(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_add.glade"
         widget_id = "equipment_add_page"
         widget_scroll_id = "equipment_add_scroll_window"
@@ -175,7 +177,7 @@ class EquipAdd(Widget):
         column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
         store_func = store_func
         self.entries = {"eal_number":"equipment_add_entry_eal", "equipment_type":"equipment_add_entry_type", "manufacturer":"equipment_add_entry_manufacturer", "model":"equipment_add_entry_model", "pressure":"equipment_add_entry_pressure", "serial_number":"equipment_add_entry_serial"}    
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         
         self.eal_number_comp = Function.entry_completion(self, self.store, "equipment_add_entry_eal", 0)
@@ -197,14 +199,14 @@ class EquipAdd(Widget):
         procedure = 'N/A'
         message = entered_text['eal_number'] + ' added to equipment store'
         
+        log_query = self.queries.logbook["insert"]
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
         query = self.queries.equipment["insert"]
         #self.queries.query(query, values)
-        Confirm(self.queries, query, values)
+        self.confirm.confirm_message(self.queries, query, values, log_query, log_values)
         
-        log_query = self.queries.logbook["insert"]
-        self.queries.log_query(log_query, log_values)
+        
         
         Function.clear_entries(self, entries)
         
@@ -245,15 +247,15 @@ class EquipAdd(Widget):
         
     def on_equipment_add_entry_manufacturer_changed(self, entry):
         search = entry.get_text()
-        self.current_filter = search 
+        '''self.current_filter = search 
         self.current_filter_column = 2
-        self.filter.refilter()
+        self.filter.refilter()'''
     
     def on_equipment_add_entry_model_changed(self, entry):
         search = entry.get_text()
-        self.current_filter = search
+        '''self.current_filter = search
         self.current_filter_column = 3
-        self.filter.refilter()  
+        self.filter.refilter()'''  
         
         
     def on_equipment_add_page_delete_event(self, *args):
@@ -262,7 +264,7 @@ class EquipAdd(Widget):
         
 #Do completions
 class EquipCal(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_calibration.glade"
         widget_id = "equipment_calibration_page"
         widget_scroll_id = "equipment_calibration_scroll_window"
@@ -271,7 +273,7 @@ class EquipCal(Widget):
         column_numbers = (0,1,2,3,4,5,6)
         column_headings = ["EAL Number", "Calibration Company", "Calibration Type", "Calibration Date", "Calibration Recall", "Calibration Expiry", "Calibration Certificate"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.type = "External"
         self.entries = {"eal_number":"equipment_calibration_entry_eal", "calibration_company":"equipment_calibration_entry_company"}
@@ -343,7 +345,7 @@ class EquipCal(Widget):
         
 #Do compltions
 class EquipClean(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_cleanliness.glade"
         widget_id = "equipment_cleanliness_page"
         widget_scroll_id = "equipment_cleanliness_scroll_window"
@@ -352,7 +354,7 @@ class EquipClean(Widget):
         column_numbers = (0,1,2,3,4,5,6,7,8,9)
         column_headings = ["EAL Number", "Particle Counter Number", "Dew Point Meter", "Procedure", "Cleanliness & Dryness Date", "Cleanliness & Dryness Recall", "Cleanliness & Dryness Expiry", "Test Location", "Result", "Proof Certificate"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.entries = {"eal_number":"equipment_cleanliness_entry_eal", "pco_number":"equipment_cleanliness_entry_pco", "dew_number":"equipment_cleanliness_entry_dew", "procedure":"equipment_cleanliness_entry_procedure", "clean_location":"equipment_cleanliness_entry_location"}
     
@@ -416,7 +418,7 @@ class EquipClean(Widget):
         
 #Do completions
 class EquipProof(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_proof.glade"
         widget_id = "equipment_proof_page"
         widget_scroll_id = "equipment_proof_scroll_window"
@@ -425,7 +427,7 @@ class EquipProof(Widget):
         column_numbers = (0,1,2,3,4,5,6,7,8,9,10)
         column_headings = ["EAL Number", "Test Pressure", "Test Duration", "Transducer Number", "Procedure", "Proof Date", "Proof Recall", "Proof Expiry", "Test Location", "Result", "Proof Certificate"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.entries = {"eal_number":"equipment_proof_entry_eal", "proof_pressure":"equipment_proof_entry_bar", "proof_duration":"equipment_proof_entry_duration", "pt_number":"equipment_proof_entry_pt", "procedure":"equipment_proof_entry_procedure", "proof_location":"equipment_proof_entry_location"}
         
@@ -489,7 +491,7 @@ class EquipProof(Widget):
         Gtk.main_quit(*args)    
 #Entry for filter
 class EquipSearch(Widget):
-    def __init__(self, queries, store_func):
+    def __init__(self, queries, store_func, parent):
         glade_file = "Glade/equipment_search.glade"
         widget_id = "equipment_search_page"
         widget_scroll_id = "equipment_search_scroll_window"
@@ -498,7 +500,7 @@ class EquipSearch(Widget):
         column_numbers = (0,1,2,3,4)
         column_headings = ["EAL Number", "Equipment Type", "Serial Number", "Calibration Expiry", "Current Location"]
         store_func = store_func
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
+        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         
     def on_equipment_search_button_export_clicked(self, equipment_search_button_export):
@@ -513,20 +515,30 @@ class EquipSearch(Widget):
         Gtk.main_quit(*args)
 
 class Confirm:
-    def __init__(self, queries, query, values):
+    def __init__(self, parent):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("Glade/main.glade")
+        self.builder.add_from_file("Glade/confirm.glade")
+        
         self.builder.connect_signals(self)
         self.confirm = self.builder.get_object("confirm")
+        self.msg = self.builder.get_object("confirm_label")
+        self.confirm.set_transient_for(parent)
+        #self.confirm.show()
+        
+        
+    def confirm_message(self, queries, query, values, log_query, log_values):
         self.confirm.show()
         self.queries = queries
         self.query = query
         self.values = values
-        msg = self.builder.get_object("confirm_label")
-        msg.set_label("You are about to add {}".format(self.values))
+        self.log_query = log_query
+        self.log_values = log_values
         
-    def on_confirm_button_clicked(self, login_button):
+        self.msg.set_label("You are about to add {}".format(self.values))
+        
+    def on_confirm_button_clicked(self, confirm_button):
         self.queries.query(self.query, self.values)
+        self.queries.log_query(self.log_query, self.log_values)
         self.confirm.destroy()
         
     def on_confirm_cancel_button_clicked(self, confirm_cancel_button):

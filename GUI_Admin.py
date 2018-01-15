@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 from time import sleep
-from GUI_Widgets import DocAdd, Log, EquipAdd, EquipCal, EquipClean, EquipProof, EquipSearch
+from GUI_Widgets import DocAdd, Log, EquipAdd, EquipCal, EquipClean, EquipProof, EquipSearch, Confirm
 from SQL import Store, Queries
 import mysql.connector
 from gui_functions import Function, Cal_Date
@@ -10,7 +10,7 @@ from gui_functions import Function, Cal_Date
 dbConfig = {
             'user' : '',
             'password' : '',
-            'host' : '127.0.0.1',
+            'host' : '192.168.0.103',
             'database' : 'eal_admin'
             }
         
@@ -30,7 +30,8 @@ class Main:
         self.equip_cleanliness = self.builder.get_object("equipment_cleanliness_box")
         self.log = self.builder.get_object("log_box")
         self.docs_add = self.builder.get_object("documents_add_box")
-        
+         
+       
         self.notebook.set_current_page(0)
         
         self.login = self.builder.get_object("login")
@@ -56,13 +57,13 @@ class Main:
             error.set_label("Error occured: {}".format(err))
             
     def pages(self):
-        self.equip_add_page = EquipAdd(self.queries, self.store_func)
-        self.equip_search_page = EquipSearch(self.queries, self.store_func)
-        self.equip_calibration_page = EquipCal(self.queries, self.store_func)
-        self.equip_proof_page = EquipProof(self.queries, self.store_func)
-        self.equip_cleanliness_page = EquipClean(self.queries, self.store_func)
-        self.log_page = Log(self.queries, self.store_func)
-        self.docs_add_page = DocAdd(self.queries, self.store_func)
+        self.equip_add_page = EquipAdd(self.queries, self.store_func, self.main)
+        self.equip_search_page = EquipSearch(self.queries, self.store_func, self.main)
+        self.equip_calibration_page = EquipCal(self.queries, self.store_func, self.main)
+        self.equip_proof_page = EquipProof(self.queries, self.store_func, self.main)
+        self.equip_cleanliness_page = EquipClean(self.queries, self.store_func, self.main)
+        self.log_page = Log(self.queries, self.store_func, self.main)
+        self.docs_add_page = DocAdd(self.queries, self.store_func, self.main)
         
         self.equip_add.add(self.equip_add_page.widget)
         self.equip_search.add(self.equip_search_page.widget)
