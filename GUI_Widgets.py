@@ -36,6 +36,7 @@ class Widget:
             
         self.widget.show_all()
         self.store_func = store_func
+        #self.entries = entries
         self.timer()
         
     def timer(self):
@@ -64,6 +65,7 @@ class Widget:
                 value = model.get_value(tree_iter,c[i])
                 self.row.append(value)
             print(self.row)
+            Function.set_entries(self, self.entries, self.row)
             
     def filter_func(self, model, iter, data):
         if self.current_filter is None or self.current_filter == "":
@@ -94,7 +96,7 @@ class DocAdd(Widget):
         
         query = self.queries.documents["insert"]
         values = (now, entered_text['eal_number'], log_date, entered_text["log_to"], entered_text["procedure"], entered_text["message"])
-        self.queries.query(query, values)
+        Confirm(self.queries, query, values)
         
         log_query = self.queries.logbook["insert"]
         log_values = (now, text['eal_number'], date, text["log_to"], text["procedure"], text["message"])
@@ -113,7 +115,10 @@ class DocAdd(Widget):
         self.current_filter = search.upper()
         self.current_filter_column = 0
         self.filter.refilter()
+    
+    def on_documents_add_page_delete_event(self, *args):
         
+        Gtk.main_quit(*args)
 
 class Log(Widget):
     def __init__(self, queries, store_func):
@@ -138,7 +143,7 @@ class Log(Widget):
         log_values = (now, entered_text['eal_number'], log_date, entered_text["log_from"], entered_text["procedure"], entered_text["message"])
         
         log_query = self.queries.logbook["insert"]
-        self.queries.query(log_query, log_values)
+        Confirm(self.queries, query, values)
         
         Function.clear_entries(self, entries)
         
@@ -151,8 +156,12 @@ class Log(Widget):
     def on_equipment_log_entry_eal_changed(self, entry):
         search = entry.get_text()
         self.current_filter = search.upper()
-        self.current_column = 0
-        self.filter.refilter()    
+        self.current_filter_column = 0
+        self.filter.refilter()  
+        
+    def on_equipment_log_page_delete_event(self, *args):
+        
+        Gtk.main_quit(*args)
     
 #Do Remove/Update and Completions
 class EquipAdd(Widget):
@@ -165,10 +174,17 @@ class EquipAdd(Widget):
         column_numbers = (0,1,2,3,4,5)
         column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
         store_func = store_func
+        self.entries = {"eal_number":"equipment_add_entry_eal", "equipment_type":"equipment_add_entry_type", "manufacturer":"equipment_add_entry_manufacturer", "model":"equipment_add_entry_model", "pressure":"equipment_add_entry_pressure", "serial_number":"equipment_add_entry_serial"}    
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func)
         self.queries = queries
-        self.entries = {"eal_number":"equipment_add_entry_eal", "equipment_type":"equipment_add_entry_type", "manufacturer":"equipment_add_entry_manufacturer", "model":"equipment_add_entry_model", "pressure":"equipment_add_entry_pressure", "serial_number":"equipment_add_entry_serial"}
-            
+        
+        self.eal_number_comp = Function.entry_completion(self, self.store, "equipment_add_entry_eal", 0)
+        Function.entry_completion(self, self.store, "equipment_add_entry_type", 1)
+        Function.entry_completion(self, self.store, "equipment_add_entry_manufacturer", 2)
+        Function.entry_completion(self, self.store, "equipment_add_entry_model", 3)
+        #Function.entry_completion(self, self.store, "equipment_add_entry_pressure", 4)
+        #Function.entry_completion(self, self.store, "equipment_add_entry_serial", 5)
+        
     def on_equipment_add_button_add_clicked(self, equipment_add_button_add):
         entries = self.entries
         entered_text = Function.get_entries(self, entries)
@@ -184,10 +200,11 @@ class EquipAdd(Widget):
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         
         query = self.queries.equipment["insert"]
-        self.queries.query(query, values)
+        #self.queries.query(query, values)
+        Confirm(self.queries, query, values)
         
         log_query = self.queries.logbook["insert"]
-        self.queries.query(log_query, log_values)
+        self.queries.log_query(log_query, log_values)
         
         Function.clear_entries(self, entries)
         
@@ -239,7 +256,9 @@ class EquipAdd(Widget):
         self.filter.refilter()  
         
         
+    def on_equipment_add_page_delete_event(self, *args):
         
+        Gtk.main_quit(*args)
         
 #Do completions
 class EquipCal(Widget):
@@ -256,6 +275,7 @@ class EquipCal(Widget):
         self.queries = queries
         self.type = "External"
         self.entries = {"eal_number":"equipment_calibration_entry_eal", "calibration_company":"equipment_calibration_entry_company"}
+        #Function.entry_completion2(self, self.completion, "equipment_calibration_entry_eal")
         
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
         self.type = "External"
@@ -294,10 +314,10 @@ class EquipCal(Widget):
         log_values = (now, text['eal_number'], now, location, procedure, message)
         
         query = self.queries.calibration["insert"]
-        self.queries.query(query, values)
+        Confirm(self.queries, query, values)
         
         log_query = self.queries.logbook["insert"]
-        self.queries.query(log_query, log_values)
+        self.queries.log_query(log_query, log_values)
         
         Function.clear_entries(self, entries)
     
@@ -317,7 +337,9 @@ class EquipCal(Widget):
         self.current_filter_column = 0
         self.filter.refilter()
         
+    def on_equipment_calibration_page_delete_event(self, *args):
         
+        Gtk.main_quit(*args)    
         
 #Do compltions
 class EquipClean(Widget):
@@ -364,10 +386,10 @@ class EquipClean(Widget):
         
         log_values = (now, entered_text['eal_number'], now, location, procedure, message)
         query = self.queries.clean["insert"]
-        self.queries.query(query, values)
+        Confirm(self.queries, query, values)
         
         log_query = self.queries.logbook["insert"]
-        self.queries.query(log_query, log_values)
+        self.queries.log_query(log_query, log_values)
         
         Function.clear_entries(self, entries)
     
@@ -388,6 +410,9 @@ class EquipClean(Widget):
         self.current_filter_column = 0
         self.filter.refilter()
         
+    def on_equipment_cleanliness_page_delete_event(self, *args):
+        
+        Gtk.main_quit(*args) 
         
 #Do completions
 class EquipProof(Widget):
@@ -434,10 +459,10 @@ class EquipProof(Widget):
         log_values = (now, text['eal_number'], log_date, text["proof_location"], text["procedure"], proof_message)
         
         query = self.queries.proof["insert"]
-        self.queries.query(query, values)
+        Confirm(self.queries, query, values)
         
         log_query = self.queries.logbook["insert"]
-        self.queries.query(log_query, log_values)
+        self.queries.log_query(log_query, log_values)
         
         Function.clear_entries(self, entries)
         print ("Add")
@@ -459,7 +484,9 @@ class EquipProof(Widget):
         self.current_filter_column = 0
         self.filter.refilter()
         
+    def on_equipment_proof_page_delete_event(self, *args):
         
+        Gtk.main_quit(*args)    
 #Entry for filter
 class EquipSearch(Widget):
     def __init__(self, queries, store_func):
@@ -481,3 +508,31 @@ class EquipSearch(Widget):
             for row in rows:
                 writer.writerow(row)
         
+    def on_equipment_search_page_delete_event(self, *args):
+        
+        Gtk.main_quit(*args)
+
+class Confirm:
+    def __init__(self, queries, query, values):
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file("Glade/main.glade")
+        self.builder.connect_signals(self)
+        self.confirm = self.builder.get_object("confirm")
+        self.confirm.show()
+        self.queries = queries
+        self.query = query
+        self.values = values
+        msg = self.builder.get_object("confirm_label")
+        msg.set_label("You are about to add {}".format(self.values))
+        
+    def on_confirm_button_clicked(self, login_button):
+        self.queries.query(self.query, self.values)
+        self.confirm.destroy()
+        
+    def on_confirm_cancel_button_clicked(self, confirm_cancel_button):
+        self.confirm.destroy()
+    
+    def on_confirm_delete_event(self, *args):
+        self.confirm.destroy()
+        
+    

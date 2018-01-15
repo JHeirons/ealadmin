@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="equipment_cleanliness_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -61,9 +61,9 @@
         <child>
           <object class="GtkImage" id="equipment_cleanliness_logo1">
             <property name="width_request">220</property>
-            <property name="height_request">-1</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">start</property>
             <property name="margin_left">120</property>
             <property name="pixbuf">logo.png</property>
           </object>
@@ -106,7 +106,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">EAL Number</property>
+                    <property name="placeholder_text">EAL Number</property>
                     <signal name="changed" handler="on_equipment_cleanliness_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -150,7 +150,7 @@ Number:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Particle Counter Number</property>
+                    <property name="placeholder_text">Particle Counter Number</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -193,7 +193,7 @@ Meter:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Dew Point Meter</property>
+                    <property name="placeholder_text">Dew Point Meter</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -235,7 +235,7 @@ Meter:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Procedure</property>
+                    <property name="placeholder_text">Procedure</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -322,7 +322,7 @@ Meter:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Test Location</property>
+                    <property name="placeholder_text">Test Location</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -372,6 +372,7 @@ Meter:</property>
                         <property name="receives_default">False</property>
                         <property name="margin_top">5</property>
                         <property name="margin_bottom">5</property>
+                        <property name="xalign">0.5</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_equipment_cleanliness_radio_pass_toggled" swapped="no"/>
@@ -392,6 +393,7 @@ Meter:</property>
                         <property name="receives_default">False</property>
                         <property name="margin_top">5</property>
                         <property name="margin_bottom">5</property>
+                        <property name="xalign">0.5</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">equipment_cleanliness_radio_pass</property>
                         <signal name="toggled" handler="on_equipment_cleanliness_radio_fail_toggled" swapped="no"/>
@@ -485,16 +487,14 @@ Certificate:</property>
         <property name="margin_left">15</property>
         <property name="margin_top">70</property>
         <property name="margin_bottom">5</property>
-        <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
+        <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">10</property>
         <property name="position">1</property>

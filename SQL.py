@@ -1,6 +1,7 @@
 import mysql.connector
 import numpy as np
 from datetime import date
+from GUI_Widgets import Confirm
 
 class Store:
     def __init__(self, dbConfig):
@@ -59,6 +60,12 @@ class Queries:
         self.conn = mysql.connector.connect(**dbConfig)
     
     def query(self, query, values):
+        curr = self.conn.cursor()
+        curr.execute(query, values)
+        self.conn.commit()
+        curr.close()
+        
+    def log_query(self, query, values):
         curr = self.conn.cursor()
         curr.execute(query, values)
         self.conn.commit()

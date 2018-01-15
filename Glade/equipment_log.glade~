@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="equipment_log_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -38,7 +38,6 @@
             <child>
               <object class="GtkButton" id="equipment_log_button_clear">
                 <property name="label" translatable="yes">Clear</property>
-                <property name="name">80</property>
                 <property name="width_request">100</property>
                 <property name="height_request">40</property>
                 <property name="visible">True</property>
@@ -61,10 +60,11 @@
         </child>
         <child>
           <object class="GtkImage" id="equipment_log_logo">
-            <property name="width_request">100</property>
-            <property name="height_request">-1</property>
+            <property name="width_request">220</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="margin_left">120</property>
             <property name="pixbuf">logo.png</property>
           </object>
           <packing>
@@ -107,7 +107,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">EAL Number</property>
+                    <property name="placeholder_text">EAL Number</property>
                     <signal name="changed" handler="on_equipment_log_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -178,8 +178,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Going from
-Loaction</property>
+                    <property name="label" translatable="yes">Loaction</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -196,7 +195,8 @@ Loaction</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Going From</property>
+                    <property name="shadow_type">none</property>
+                    <property name="placeholder_text">Location</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -215,38 +215,6 @@ Loaction</property>
               <object class="GtkBox" id="equipment_log_box_to">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="equipment_log_label_to">
-                    <property name="width_request">120</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Going to 
-Location:</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="equipment_log_entry_to">
-                    <property name="width_request">220</property>
-                    <property name="height_request">35</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Going To</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -281,7 +249,7 @@ Location:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Procedure</property>
+                    <property name="placeholder_text">Procedure</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -323,7 +291,7 @@ Location:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Log Message</property>
+                    <property name="placeholder_text">Log Message</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -355,22 +323,18 @@ Location:</property>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="equipment_log_scroll_window">
-        <property name="width_request">-1</property>
-        <property name="height_request">-1</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="margin_left">15</property>
         <property name="margin_top">70</property>
-        <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
+        <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">10</property>
         <property name="position">1</property>

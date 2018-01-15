@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkBox" id="documents_add_page">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -38,7 +38,6 @@
             <child>
               <object class="GtkButton" id="documents_add_button_clear">
                 <property name="label" translatable="yes">Clear</property>
-                <property name="name">80</property>
                 <property name="width_request">100</property>
                 <property name="height_request">40</property>
                 <property name="visible">True</property>
@@ -62,7 +61,6 @@
         <child>
           <object class="GtkImage" id="documents_add_logo">
             <property name="width_request">220</property>
-            <property name="height_request">-1</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
@@ -109,7 +107,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document For</property>
+                    <property name="placeholder_text">Document For</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -152,7 +150,7 @@ Reference:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Documnent ID Reference</property>
+                    <property name="placeholder_text">Documnent ID Reference</property>
                     <signal name="changed" handler="on_documents_add_entry_eal_changed" swapped="no"/>
                   </object>
                   <packing>
@@ -196,7 +194,7 @@ Name:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document Name</property>
+                    <property name="placeholder_text">Document Name</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -239,7 +237,7 @@ Issue:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Document Issue</property>
+                    <property name="placeholder_text">Document Issue</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -282,7 +280,7 @@ Issue:</property>
                     <property name="can_focus">True</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
-                    <property name="placeholder_text" translatable="yes">Reason for Issue</property>
+                    <property name="placeholder_text">Reason for Issue</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -363,7 +361,19 @@ Location:</property>
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkFileChooserButton" id="documents_add_file_path">
+                    <property name="width_request">220</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_top">5</property>
+                    <property name="margin_bottom">5</property>
+                    <property name="title" translatable="yes"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </object>
               <packing>
@@ -389,22 +399,18 @@ Location:</property>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="documents_add_scroll_window">
-        <property name="width_request">-1</property>
-        <property name="height_request">-1</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="margin_left">15</property>
         <property name="margin_top">70</property>
-        <property name="min_content_width">600</property>
-        <property name="max_content_width">1000</property>
-        <property name="propagate_natural_width">True</property>
-        <property name="propagate_natural_height">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
+        <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">10</property>
         <property name="position">1</property>

@@ -2,8 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from dateutil.relativedelta import *
-from datetime import *
-import mysql.connector
+from datetime import datetime, date
 
 import os
 
@@ -34,7 +33,8 @@ class Function:
     def set_entries(self, entries, text):
         set_entries = {}
         for i, entry in enumerate(entries):
-            set_entries[entry] = Function.set_entry(self, entries[entry], text[i])
+            set_entries[entry] = Function.set_entry(self, entries[entry], str(text[i]))
+        print("Enty set")
         return set_entries
     
     def clear_entries(self, entries):
@@ -47,8 +47,13 @@ class Function:
         entry_to_complete = self.builder.get_object(entry)
         completion = Gtk.EntryCompletion()
         completion.set_model(model)
-        entry_to_complete.set_completion(completion)
         completion.set_text_column(column)
+        entry_to_complete.set_completion(completion)
+        return completion
+    
+    def entry_completion2(self, completion, entry):
+        entry_to_complete = self.builder.get_object(entry)
+        entry_to_complete.set_completion(completion)
         
     def push_item(self, text, data):
         buff = text

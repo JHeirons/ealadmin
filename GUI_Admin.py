@@ -13,7 +13,7 @@ dbConfig = {
             'host' : '127.0.0.1',
             'database' : 'eal_admin'
             }
-
+        
 class Main:
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -31,15 +31,11 @@ class Main:
         self.log = self.builder.get_object("log_box")
         self.docs_add = self.builder.get_object("documents_add_box")
         
-        
-        
         self.notebook.set_current_page(0)
         
         self.login = self.builder.get_object("login")
         
-        
         self.login.show()
-        
         
     def on_login_button_clicked (self, login_button):
         user = Function.get_entry(self, "login_username")
@@ -91,15 +87,12 @@ class Main:
         Gtk.main_quit(*args)
         
     def on_main_delete_event(self, *args):
+        
         self.conn.close()
         Gtk.main_quit(*args)
 
         
 if __name__ == "__main__":
-    
-    #store_func = Store(dbConfig)
-    #queries = Queries(dbConfig)
     main = Main()
-    
     
     Gtk.main()
