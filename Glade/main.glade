@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.18"/>
   <object class="GtkWindow" id="main">
@@ -181,8 +180,8 @@
               <object class="GtkLabel" id="documents_add">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Add</property>
                 <property name="yalign">0.49000000953674316</property>
+                <property name="label" translatable="yes">Add</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -294,9 +293,12 @@
         </child>
       </object>
     </child>
+<<<<<<< HEAD
     <child type="titlebar">
       <placeholder/>
     </child>
+=======
+>>>>>>> 14db3839774b9378f7fb4e7cda1e15a1f30acf56
   </object>
   <object class="GtkDialog" id="login">
     <property name="can_focus">False</property>
@@ -473,8 +475,5 @@
       <action-widget response="0">login_button</action-widget>
       <action-widget response="0">cancel_button</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>
