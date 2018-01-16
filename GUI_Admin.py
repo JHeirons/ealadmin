@@ -30,8 +30,6 @@ class Main:
         self.equip_cleanliness = self.builder.get_object("equipment_cleanliness_box")
         self.log = self.builder.get_object("log_box")
         self.docs_add = self.builder.get_object("documents_add_box")
-         
-       
         self.notebook.set_current_page(0)
         
         self.login = self.builder.get_object("login")

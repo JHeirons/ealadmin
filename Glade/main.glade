@@ -293,12 +293,9 @@
         </child>
       </object>
     </child>
-<<<<<<< HEAD
     <child type="titlebar">
       <placeholder/>
     </child>
-=======
->>>>>>> 14db3839774b9378f7fb4e7cda1e15a1f30acf56
   </object>
   <object class="GtkDialog" id="login">
     <property name="can_focus">False</property>

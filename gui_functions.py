@@ -13,6 +13,7 @@ class Function:
         
     def get_entry(self, entry):
         entry_to_get = self.builder.get_object(entry)
+        entry_to_get.set_overwrite_mode(overwrite=True)
         entry_text = entry_to_get.get_text()
         print(entry_text)
         return entry_text
@@ -27,20 +28,18 @@ class Function:
     
     def set_entry(self, entry, text):
         entry_to_set = self.builder.get_object(entry)
-        set_text = entry_to_set.set_text(text)
+        entry_to_set.get_overwrite_mode()
+        set_text = str(entry_to_set.set_text(text))
         return text
         
     def set_entries(self, entries, text):
-        set_entries = {}
-        for i, entry in enumerate(entries):
-            set_entries[entry] = Function.set_entry(self, entries[entry], str(text[i]))
-        print("Enty set")
-        return set_entries
+        for entry in entries:
+            Function.set_entry(self, entry, text[entries[entry]])
     
     def clear_entries(self, entries):
-        entries_to_clear = entries
-        text = ['']*len(entries_to_clear)
-        Function.set_entries(self, entries_to_clear, text)
+        for entry in entries:
+            Function.set_entry(self, entry, '')
+        
     
     
     def entry_completion(self, model, entry, column):

@@ -65,7 +65,7 @@ class Widget:
             self.row = []
             for i in c:
                 value = model.get_value(tree_iter,c[i])
-                self.row.append(value)
+                self.row.append(str(value))
             print(self.row)
             Function.set_entries(self, self.entries, self.row)
             
@@ -107,9 +107,9 @@ class DocAdd(Widget):
         print(text)
         
     def on_documents_add_button_clear_clicked(self, documents_add_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.tree_selection.unselect_all()
         self.current_filter = None
         
     def on_documents_add_entry_eal_changed(self, entry):
@@ -134,7 +134,8 @@ class Log(Widget):
         store_func = store_func
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
-        self.entries = {"eal_number":"equipment_log_entry_eal", "log_location":"equipment_log_entry_from", "procedure":"equipment_log_entry_procedure", "message":"equipment_log_entry_message"}
+        self.entries = {"equipment_log_entry_eal" : 0, "equipment_log_entry_from" : 2, "equipment_log_entry_procedure" : 3, "equipment_log_entry_message" : 4} 
+        
         
     def on_equipment_log_button_enter_clicked(self, equipment_log_button_enter):
         entries = self.entries
@@ -150,9 +151,9 @@ class Log(Widget):
         Function.clear_entries(self, entries)
         
     def on_equipment_log_button_clear_clicked(self, equipment_log_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.tree_selection.unselect_all()
         self.current_filter = None
         
     def on_equipment_log_entry_eal_changed(self, entry):
@@ -176,7 +177,7 @@ class EquipAdd(Widget):
         column_numbers = (0,1,2,3,4,5)
         column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
         store_func = store_func
-        self.entries = {"eal_number":"equipment_add_entry_eal", "equipment_type":"equipment_add_entry_type", "manufacturer":"equipment_add_entry_manufacturer", "model":"equipment_add_entry_model", "pressure":"equipment_add_entry_pressure", "serial_number":"equipment_add_entry_serial"}    
+        self.entries = {"equipment_add_entry_eal" : 0, "equipment_add_entry_type" : 1, "equipment_add_entry_manufacturer" : 2, "equipment_add_entry_model" : 3, "equipment_add_entry_pressure" : 4, "equipment_add_entry_serial" : 5}   
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         
@@ -228,30 +229,35 @@ class EquipAdd(Widget):
         self.treeview_refresh()
     
     def on_equipment_add_button_clear_clicked(self, equipment_add_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.tree_selection.unselect_all()
+        
         self.current_filter = None
     
     def on_equipment_add_entry_eal_changed(self, entry):
+        self.tree_selection.unselect_all()
         search = entry.get_text() 
         self.current_filter = search.upper()
         self.current_filter_column = 0
         self.filter.refilter()
         
     def on_equipment_add_entry_type_changed(self, entry):
+        self.tree_selection.unselect_all()
         search = entry.get_text()
         self.current_filter = search 
         self.current_filter_column = 1
         self.filter.refilter()
         
     def on_equipment_add_entry_manufacturer_changed(self, entry):
+        self.tree_selection.unselect_all()
         search = entry.get_text()
         '''self.current_filter = search 
         self.current_filter_column = 2
         self.filter.refilter()'''
     
     def on_equipment_add_entry_model_changed(self, entry):
+        self.tree_selection.unselect_all()
         search = entry.get_text()
         '''self.current_filter = search
         self.current_filter_column = 3
@@ -276,7 +282,8 @@ class EquipCal(Widget):
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
         self.type = "External"
-        self.entries = {"eal_number":"equipment_calibration_entry_eal", "calibration_company":"equipment_calibration_entry_company"}
+        self.entries = {"equipment_calibration_entry_eal" : 0, "equipment_calibration_entry_company" : 1}  
+        
         #Function.entry_completion2(self, self.completion, "equipment_calibration_entry_eal")
         
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
@@ -324,9 +331,9 @@ class EquipCal(Widget):
         Function.clear_entries(self, entries)
     
     def on_equipment_calibration_button_clear_clicked(self, equipment_calibration_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.tree_selection.unselect_all()
         self.current_filter = None
         print ("Clear")
         
@@ -356,8 +363,8 @@ class EquipClean(Widget):
         store_func = store_func
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
-        self.entries = {"eal_number":"equipment_cleanliness_entry_eal", "pco_number":"equipment_cleanliness_entry_pco", "dew_number":"equipment_cleanliness_entry_dew", "procedure":"equipment_cleanliness_entry_procedure", "clean_location":"equipment_cleanliness_entry_location"}
-    
+        self.entries = {"equipment_cleanliness_entry_eal" : 0, "equipment_cleanliness_entry_pco" : 1, "equipment_cleanliness_entry_dew" : 2, "equipment_cleanliness_entry_procedure" : 3, "equipment_cleanliness_entry_location" : 7} 
+        
     def on_equipment_cleanliness_radio_pass_toggled(self, equipment_cleanliness_radio_pass):
         self.type = "Pass"
     
@@ -396,9 +403,9 @@ class EquipClean(Widget):
         Function.clear_entries(self, entries)
     
     def on_equipment_cleanliness_button_clear_clicked(self, equipment_cleanliness_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.tree_selection.unselect_all()
         self.current_filter = None
         print ("Clear")
         
@@ -429,7 +436,8 @@ class EquipProof(Widget):
         store_func = store_func
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
-        self.entries = {"eal_number":"equipment_proof_entry_eal", "proof_pressure":"equipment_proof_entry_bar", "proof_duration":"equipment_proof_entry_duration", "pt_number":"equipment_proof_entry_pt", "procedure":"equipment_proof_entry_procedure", "proof_location":"equipment_proof_entry_location"}
+        self.entries = {"equipment_proof_entry_eal" : 0, "equipment_proof_entry_bar" : 1, "equipment_proof_entry_duration" : 2, "equipment_proof_entry_pt" : 3, "equipment_proof_entry_procedure" : 4, "equipment_proof_entry_location" : 8} 
+        
         
     def on_equipment_proof_radio_pass_toggled(self, equipment_proof_radio_pass):
         self.type = "Pass"
@@ -470,9 +478,9 @@ class EquipProof(Widget):
         print ("Add")
     
     def on_equipment_proof_button_clear_clicked(self, equipment_proof_button_clear):
+        self.tree_selection.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
-        self.treeview_selection.unselect_all()
         self.current_filter = None
         print ("Clear")
         
@@ -518,10 +526,6 @@ class Confirm:
     def __init__(self, parent):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("Glade/confirm.glade")
-<<<<<<< HEAD
-=======
-        
->>>>>>> 14db3839774b9378f7fb4e7cda1e15a1f30acf56
         self.builder.connect_signals(self)
         self.confirm = self.builder.get_object("confirm")
         self.msg = self.builder.get_object("confirm_label")
