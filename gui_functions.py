@@ -19,12 +19,11 @@ class Function:
         return entry_text
     
     def get_entries(self, entries):
-        entered_text = {}
+        text = []
         for entry in entries:
-            #name = entry
-            entered_text[entry] = Function.get_entry(self, entries[entry])
-        
-        return entered_text
+            values = Function.get_entry(self, entry)
+            text.append(str(values))
+        return text
     
     def set_entry(self, entry, text):
         entry_to_set = self.builder.get_object(entry)
@@ -34,7 +33,8 @@ class Function:
         
     def set_entries(self, entries, text):
         for entry in entries:
-            Function.set_entry(self, entry, text[entries[entry]])
+            t = str(text[entries[entry]])
+            Function.set_entry(self, entry, t)
     
     def clear_entries(self, entries):
         for entry in entries:
@@ -64,10 +64,10 @@ class Function:
         return
     
     def file_path(self, dept_folder, sub_folder, name, file_format):
-        slash = '/'
+        slash = '\\'
         dot = '.'
-        #path_root = '//EALSERVER/Jonathan Folder/Admin_Test/'
-        path_root = "Documents/Programming/Brackets/ealadmin/"
+        path_root = '\\\\EALSERVER\\Jonathan Folder\\Admin_Test\\'
+        #path_root = "Documents/Programming/Brackets/ealadmin/"
         #check path existance
         dept_folder_path = path_root + dept_folder 
         folder_path = dept_folder_path + slash + sub_folder

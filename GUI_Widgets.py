@@ -68,6 +68,7 @@ class Widget:
                 self.row.append(str(value))
             print(self.row)
             Function.set_entries(self, self.entries, self.row)
+            tree_selection.unselect_all()
             
     def filter_func(self, model, iter, data):
         if self.current_filter is None or self.current_filter == "":
@@ -295,6 +296,7 @@ class EquipCal(Widget):
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
         entries = self.entries
         text = Function.get_entries(self, entries)
+        print(text)
         calibration_type = self.type
         if (calibration_type == "External"):
             length = 12
@@ -307,26 +309,26 @@ class EquipCal(Widget):
         calibration_expiry = Cal_Date.expiry(self, calibration_date, length)
         calibration_recall = Cal_Date.recall(self, calibration_expiry)
         
-        file_name = text["eal_number"] + '_Cal_Cert-' + str(calibration_date)
-        certificate_location = Function.file_path(self, 'QA_Calibration_Certificates', text["eal_number"], file_name, 'pdf')
+        file_name = text[0] + '_Cal_Cert-' + str(calibration_date)
+        certificate_location = Function.file_path(self, 'QA_Calibration_Certificates', text[0], file_name, 'pdf')
         shutil.copy(self.file, certificate_location)
         calibration_certificate = certificate_location
         
         now = datetime.now()
         
         message = "Calibration certificate added."
-        location = "Westcott"
+        location = Function.get_entry(self, "equipment_calibration_entry_location")
         procedure = "N/A"
         
-        values = (text["eal_number"], now, text["calibration_company"], calibration_type, calibration_date, calibration_recall, calibration_expiry, calibration_certificate)
+        values = (text[0], now, text[1], calibration_type, calibration_date, calibration_recall, calibration_expiry, calibration_certificate)
     
-        log_values = (now, text['eal_number'], now, location, procedure, message)
+        log_values = (now, text[0], now, location, procedure, message)
         
         query = self.queries.calibration["insert"]
-        Confirm(self.queries, query, values)
+        
         
         log_query = self.queries.logbook["insert"]
-        self.queries.log_query(log_query, log_values)
+        self.confirm.confirm_message(self.queries, query, values, log_query, log_values)
         
         Function.clear_entries(self, entries)
     
@@ -510,7 +512,15 @@ class EquipSearch(Widget):
         store_func = store_func
         Widget.__init__(self, glade_file, widget_id, widget_scroll_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent)
         self.queries = queries
+        self.entries = {"equipment_search_entry_search" : 0}
         
+    def on_equipment_search_entry_search_changed(self, equipment_search_entry_search):
+        search = equipment_search_entry_search.get_text()
+        self.current_filter = search.upper()
+        self.current_filter_column = 0
+        self.filter.refilter()
+    
+    
     def on_equipment_search_button_export_clicked(self, equipment_search_button_export):
         with open('overview.csv', 'w', newline='') as f:
             writer = csv.writer(f)
