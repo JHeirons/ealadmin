@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 from time import sleep
-from GUI_Widgets import DocAdd, Log, EquipAdd, EquipCal, EquipClean, EquipProof, EquipSearch, Confirm
+from GUI_Widgets import EquipAdd, EquipCal, EquipProof, EquipClean, EquipSearch, Log, DocAdd
 from SQL import Store, Queries
 import mysql.connector
 from gui_functions import Function, Cal_Date
@@ -10,7 +10,7 @@ from gui_functions import Function, Cal_Date
 dbConfig = {
             'user' : '',
             'password' : '',
-            'host' : '192.168.0.103',
+            'host' : '127.0.0.1',
             'database' : 'eal_admin'
             }
         
@@ -56,12 +56,15 @@ class Main:
             
     def pages(self):
         self.equip_add_page = EquipAdd(self.queries, self.store_func, self.main)
-        self.equip_search_page = EquipSearch(self.queries, self.store_func, self.main)
-        self.equip_calibration_page = EquipCal(self.queries, self.store_func, self.main)
-        self.equip_proof_page = EquipProof(self.queries, self.store_func, self.main)
-        self.equip_cleanliness_page = EquipClean(self.queries, self.store_func, self.main)
-        self.log_page = Log(self.queries, self.store_func, self.main)
         self.docs_add_page = DocAdd(self.queries, self.store_func, self.main)
+        com_store = self.equip_add_page.store
+        proc_store = self.docs_add_page.store
+        self.equip_search_page = EquipSearch(self.queries, self.store_func, self.main)
+        self.equip_calibration_page = EquipCal(self.queries, self.store_func, self.main, com_store)
+        self.equip_proof_page = EquipProof(self.queries, self.store_func, self.main, com_store, proc_store)
+        self.equip_cleanliness_page = EquipClean(self.queries, self.store_func, self.main, com_store, proc_store)
+        self.log_page = Log(self.queries, self.store_func, self.main, com_store, proc_store)
+        
         
         self.equip_add.add(self.equip_add_page.widget)
         self.equip_search.add(self.equip_search_page.widget)
@@ -70,6 +73,8 @@ class Main:
         self.equip_cleanliness.add(self.equip_cleanliness_page.widget)
         self.log.add(self.log_page.widget)
         self.docs_add.add(self.docs_add_page.widget)
+        
+        
     
     def on_login_username_changed(self, login_username):
         error = self.builder.get_object("warning_label")

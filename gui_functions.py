@@ -13,9 +13,7 @@ class Function:
         
     def get_entry(self, entry):
         entry_to_get = self.builder.get_object(entry)
-        entry_to_get.set_overwrite_mode(overwrite=True)
         entry_text = entry_to_get.get_text()
-        print(entry_text)
         return entry_text
     
     def get_entries(self, entries):
@@ -27,7 +25,6 @@ class Function:
     
     def set_entry(self, entry, text):
         entry_to_set = self.builder.get_object(entry)
-        entry_to_set.get_overwrite_mode()
         set_text = str(entry_to_set.set_text(text))
         return text
         
@@ -40,35 +37,19 @@ class Function:
         for entry in entries:
             Function.set_entry(self, entry, '')
         
-    
-    
     def entry_completion(self, model, entry, column):
         entry_to_complete = self.builder.get_object(entry)
         completion = Gtk.EntryCompletion()
         completion.set_model(model)
         completion.set_text_column(column)
         entry_to_complete.set_completion(completion)
-        return completion
-    
-    def entry_completion2(self, completion, entry):
-        entry_to_complete = self.builder.get_object(entry)
-        entry_to_complete.set_completion(completion)
         
-    def push_item(self, text, data):
-        buff = text
-        self.status_bar.push(data, buff)
-        return
-
-    def pop_item(self, data):
-        self.status_bar.pop(data)
-        return
-    
     def file_path(self, dept_folder, sub_folder, name, file_format):
-        slash = '\\'
+        #slash = '\\'
+        slash = '/'
         dot = '.'
-        path_root = '\\\\EALSERVER\\Jonathan Folder\\Admin_Test\\'
-        #path_root = "Documents/Programming/Brackets/ealadmin/"
-        #check path existance
+        #path_root = '\\\\EALSERVER\\Jonathan Folder\\Admin_Test\\'
+        path_root = "Documents/Programming/Brackets/ealadmin/"
         dept_folder_path = path_root + dept_folder 
         folder_path = dept_folder_path + slash + sub_folder
         if not os.path.exists(folder_path):
@@ -83,7 +64,6 @@ class Cal_Date:
         self.builder = Gtk.Builder()
         
     def date(self, calender_object):
-        print ("cal function")
         calender = self.builder.get_object(calender_object)
         test_date = calender.get_date()
         month = test_date.month + 1
@@ -91,6 +71,14 @@ class Cal_Date:
        
         cal_date = datetime.strptime(date_str, "%d/%m/%Y").date()
         return cal_date
+    
+    def set_date(self, calander_object, date):
+        day = int(date[0:2])
+        month = int(date[3:5])-1
+        year = int(date[6:10])
+        calender = calander_object
+        calender.select_day(day)
+        calender.select_month(month, year)
         
         
     def expiry(self, initial_date, length):

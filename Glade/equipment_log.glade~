@@ -9,6 +9,7 @@
     <property name="margin_right">10</property>
     <property name="margin_top">10</property>
     <property name="margin_bottom">10</property>
+    <signal name="delete-event" handler="on_equipment_log_page_delete_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="equipment_log_page_menu">
         <property name="visible">True</property>

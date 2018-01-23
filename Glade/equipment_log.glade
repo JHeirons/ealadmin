@@ -91,7 +91,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">EAL Number</property>
+                    <property name="label" translatable="yes">EAL Number:</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -134,7 +134,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Log Date</property>
+                    <property name="label" translatable="yes">Log Date:</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -179,7 +179,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Loaction</property>
+                    <property name="label" translatable="yes">Loaction:</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -213,17 +213,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="equipment_log_box_to">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkBox" id="equipment_log_box_procedure">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -233,7 +222,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Procedure</property>
+                    <property name="label" translatable="yes">Procedure:</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -275,7 +264,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Message</property>
+                    <property name="label" translatable="yes">Message:</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>

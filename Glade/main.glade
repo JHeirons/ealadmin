@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.18"/>
   <object class="GtkWindow" id="main">
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
+    <property name="default_width">1200</property>
     <signal name="delete-event" handler="on_main_delete_event" swapped="no"/>
     <child>
       <object class="GtkNotebook" id="main_tabs">
@@ -180,8 +182,8 @@
               <object class="GtkLabel" id="documents_add">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="yalign">0.49000000953674316</property>
                 <property name="label" translatable="yes">Add</property>
+                <property name="yalign">0.49000000953674316</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -472,5 +474,8 @@
       <action-widget response="0">login_button</action-widget>
       <action-widget response="0">cancel_button</action-widget>
     </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
   </object>
 </interface>

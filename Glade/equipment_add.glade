@@ -24,47 +24,17 @@
             <property name="column_spacing">20</property>
             <child>
               <object class="GtkButton" id="equipment_add_button_add">
-                <property name="label" translatable="yes">Add</property>
-                <property name="width_request">100</property>
-                <property name="height_request">40</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_equipment_add_button_add_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="equipment_add_button_remove">
-                <property name="label" translatable="yes">Remove</property>
+                <property name="label" translatable="yes">Enter</property>
                 <property name="width_request">100</property>
                 <property name="height_request">40</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="margin_top">5</property>
-                <signal name="clicked" handler="on_equipment_add_button_remove_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_equipment_add_button_add_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="equipment_add_button_update">
-                <property name="label" translatable="yes">Update</property>
-                <property name="width_request">100</property>
-                <property name="height_request">40</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_equipment_add_button_update_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
               </packing>
             </child>
@@ -81,7 +51,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="top_attach">0</property>
               </packing>
             </child>
           </object>
@@ -119,7 +89,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkLabel" id="equipment_add_label_eal">
+                  <object class="GtkLabel" id="equipment_add_label_eal6">
                     <property name="width_request">120</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -287,6 +257,47 @@
               </packing>
             </child>
             <child>
+              <object class="GtkBox" id="equipment_add_box_pressure">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="equipment_add_label_eal5">
+                    <property name="width_request">120</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xpad">15</property>
+                    <property name="label" translatable="yes">Pressure:</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="equipment_add_entry_pressure">
+                    <property name="width_request">220</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="margin_top">5</property>
+                    <property name="margin_bottom">5</property>
+                    <property name="placeholder_text">Pressure (bar)</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox" id="equipment_add_box_serial">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -314,47 +325,6 @@
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
                     <property name="placeholder_text">Serial Number</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="equipment_add_box_pressure">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="equipment_add_label_eal5">
-                    <property name="width_request">120</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Pressure:</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="equipment_add_entry_pressure">
-                    <property name="width_request">220</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
-                    <property name="placeholder_text">Pressure (bar)</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
