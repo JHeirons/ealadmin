@@ -1,6 +1,6 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, Gio
 from gui_functions import Function, Cal_Date
 import shutil
 from datetime import date, datetime, timedelta
@@ -8,14 +8,14 @@ from SQL import Queries, Store
 #from GUI_Admin import Main
 
 class Widget:
-    def __init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, queries):
+    def __init__(self, store_func, parent, queries, **setup):
         self.builder = Gtk.Builder()
-        self.builder.add_from_file(glade_file)
+        self.builder.add_from_file(setup["glade_file"])
         self.builder.connect_signals(self)
-        self.widget = self.builder.get_object(widget_id)
-        self.scroll = self.builder.get_object(widget_scroll_id)
-        if widget_calander_id != None:
-            self.calander = self.builder.get_object(widget_calander_id)
+        self.widget = self.builder.get_object(setup["widget_id"])
+        self.scroll = self.builder.get_object(setup["widget_scroll_id"])
+        if setup["widget_calander_id"] != None:
+            self.calander = self.builder.get_object(setup["widget_calander_id"])
         else:
             self.calander = None
         self.parent = parent
@@ -24,11 +24,16 @@ class Widget:
         self.current_items = None
         self.current_filter = None
         self.file = None
-        self.query = timer_query
+        if setup["file_chooser"] != None:
+            self.file_chooser = self.builder.get_object(setup["file_chooser"])
+        else:
+            self.file_chooser = None
+        self.query = setup["timer_query"]
         
-        self.store = store_setup #Gtk.ListStore(str)
-        self.columns = column_numbers
-        self.column_headings = column_headings
+        self.store = setup["store_setup"] #Gtk.ListStore(str)
+        self.columns = setup["column_numbers"]
+        self.column_headings = setup["column_headings"]
+        self.entries = setup["entries"]
         
         self.filter = self.store.filter_new()
         self.filter.set_visible_func(self.filter_func)
@@ -38,7 +43,7 @@ class Widget:
         self.tree_selection.connect("changed", self.onSelectionChanged)
         self.scroll.add(self.treeview)
         
-        for i, column_title in enumerate(column_headings):
+        for i, column_title in enumerate(self.column_headings):
             renderer = Gtk.CellRendererText()
             self.column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.column.set_sort_column_id(i)
@@ -87,6 +92,17 @@ class Widget:
                     elif self.column_headings[j].endswith("Date") == True:
                         date_to_set = self.row[j]
                         Cal_Date.set_date(self,  calander_object=self.calander, date=date_to_set)
+                    
+            if self.file_chooser != None:
+                for k in range(len(self.column_headings)):
+                    if self.column_headings[k].endswith("Certificate") == True:
+                        f = Gio.File.new_for_path(self.row[k])
+                        self.file_chooser.set_file(f)
+                        
+                    elif self.column_headings[k].endswith("File") == True:
+                        f = Gio.File.new_for_path(self.row[k])
+                        self.file_chooser.set_file(f)
+                        
             
     def confirm_init(self):
         self.builder.add_from_file("Glade/confirm.glade")
@@ -168,18 +184,21 @@ class Widget:
 #Do Remove/Update and Completions
 class EquipAdd(Widget):
     def __init__(self, queries, store_func, parent):
-        glade_file = "Glade/equipment_add.glade"
-        widget_id = "equipment_add_page"
-        widget_scroll_id = "equipment_add_scroll_window"
-        widget_calander_id = None
-        timer_query = queries.equipment["select"]
-        store_setup = Gtk.ListStore(str, str, str, str, int, str)
-        column_numbers = (0,1,2,3,4,5)
-        column_headings = ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"]
-        store_func = store_func
-        self.entries = {"equipment_add_entry_eal" : 0, "equipment_add_entry_type" : 1, "equipment_add_entry_manufacturer" : 2, "equipment_add_entry_model" : 3, "equipment_add_entry_pressure" : 4, "equipment_add_entry_serial" : 5}   
+        self.entries = {"equipment_add_entry_eal" : 0, "equipment_add_entry_type" : 1, "equipment_add_entry_manufacturer" : 2, "equipment_add_entry_model" : 3, "equipment_add_entry_pressure" : 4, "equipment_add_entry_serial" : 5}
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
+        
+        setup = {"glade_file" : "Glade/equipment_add.glade", 
+                 "widget_id" :  "equipment_add_page",
+                 "widget_scroll_id" : "equipment_add_scroll_window", 
+                 "widget_calander_id" : None, 
+                 "timer_query" : queries.equipment["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, str, int, str), 
+                 "column_numbers" : (0, 1, 2, 3, 4, 5),
+                 "column_headings" : ["EAL Number", "Equipment Type", "Manufacturer", "Model", "Pressure", "Serial Number"],
+                 "entries" : self.entries,
+                 "file_chooser" : None}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
         
         
         Function.entry_completion(self, self.store, "equipment_add_entry_eal", 0)
@@ -257,19 +276,24 @@ class EquipAdd(Widget):
 
 class EquipCal(Widget):
     def __init__(self, queries, store_func, parent, com_store):
-        glade_file = "Glade/equipment_calibration.glade"
-        widget_id = "equipment_calibration_page"
-        widget_scroll_id = "equipment_calibration_scroll_window"
-        widget_calander_id = "equipment_calibration_calendar_date"
-        timer_query = queries.calibration["select"]
-        store_setup = Gtk.ListStore(str, str, str, str, str, str, str)
-        column_numbers = (0,1,2,3,4,5,6)
-        column_headings = ["EAL Number", "Calibration Company", "Calibration Type", "Calibration Date", "Calibration Recall", "Calibration Expiry", "Calibration Certificate"]
-        store_func = store_func
+        
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.type = "External"
-        self.entries = {"equipment_calibration_entry_eal" : 0, "equipment_calibration_entry_company" : 1}  
+        self.entries = {"equipment_calibration_entry_eal" : 0, "equipment_calibration_entry_company" : 1}
+        
+        setup = {"glade_file" : "Glade/equipment_calibration.glade", 
+                 "widget_id" :  "equipment_calibration_page",
+                 "widget_scroll_id" : "equipment_calibration_scroll_window", 
+                 "widget_calander_id" : "equipment_calibration_calendar_date", 
+                 "timer_query" : queries.calibration["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, str, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4,5,6),
+                 "column_headings" : ["EAL Number", "Calibration Company", "Calibration Type", "Calibration Date", "Calibration Recall", "Calibration Expiry", "Calibration Certificate"],
+                 "entries" : self.entries,
+                 "file_chooser" : "equipment_calibration_file_certificate"}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
+        
         Function.entry_completion(self, com_store, "equipment_calibration_entry_eal", 0)
         
     def on_equipment_calibration_radio_external_toggled(self, equipment_calibration_radio_external):
@@ -289,6 +313,7 @@ class EquipCal(Widget):
             length = 6
         else:
             length = 12
+            
         calibration_date = Cal_Date.date(self, "equipment_calibration_calendar_date")
         calibration_expiry = Cal_Date.expiry(self, calibration_date, length)
         calibration_recall = Cal_Date.recall(self, calibration_expiry)
@@ -297,6 +322,10 @@ class EquipCal(Widget):
             file_name = text[0] + '_Cal_Cert-' + str(calibration_date)
             calibration_certificate = Function.file_path(self, 'Calibration Certificates', text[0], file_name, 'pdf')
             shutil.copy(self.file, calibration_certificate)
+            self.file_chooser.unselect_all()
+        else:
+            calibration_certificate = "Not Uploaded"
+        
         
         now = datetime.now()
         location = Function.get_entry(self, "equipment_calibration_entry_location")
@@ -333,13 +362,15 @@ class EquipCal(Widget):
     
     def on_equipment_calibration_button_clear_clicked(self, equipment_calibration_button_clear):
         self.tree_selection.unselect_all()
+        self.file_chooser.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
         self.current_filter = None
         print ("Clear")
         
     def on_equipment_calibration_file_certificate_file_set(self, equipment_calibration_file_certificate):
-        self.file = equipment_calibration_file_certificate.get_filename()
+        self.file_chooser = equipment_calibration_file_certificate
+        self.file = self.file_chooser.get_filename()
     
     def on_equipment_calibration_entry_eal_changed(self, equipment_calibration_entry_eal):
         search = equipment_calibration_entry_eal.get_text()
@@ -352,19 +383,22 @@ class EquipCal(Widget):
         
 class EquipProof(Widget):
     def __init__(self, queries, store_func, parent, com_store, proc_store):
-        glade_file = "Glade/equipment_proof.glade"
-        widget_id = "equipment_proof_page"
-        widget_scroll_id = "equipment_proof_scroll_window"
-        widget_calander_id = "equipment_proof_calendar_date"
-        timer_query = queries.proof["select"]
-        store_setup = Gtk.ListStore(str, int, int, str, str, str, str, str, str, str, str)
-        column_numbers = (0,1,2,3,4,5,6,7,8,9,10)
-        column_headings = ["EAL Number", "Test Pressure", "Test Duration", "Transducer Number", "Procedure", "Proof Date", "Proof Recall", "Proof Expiry", "Test Location", "Result", "Proof Certificate"]
-        store_func = store_func
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.entries = {"equipment_proof_entry_eal" : 0, "equipment_proof_entry_bar" : 1, "equipment_proof_entry_duration" : 2, "equipment_proof_entry_pt" : 3, "equipment_proof_entry_procedure" : 4, "equipment_proof_entry_location" : 8} 
         self.result = "Pass"
+        
+        setup = {"glade_file" : "Glade/equipment_proof.glade", 
+                 "widget_id" :  "equipment_proof_page",
+                 "widget_scroll_id" : "equipment_proof_scroll_window", 
+                 "widget_calander_id" : "equipment_proof_calendar_date", 
+                 "timer_query" : queries.proof["select"],
+                 "store_setup" : Gtk.ListStore(str, int, int, str, str, str, str, str, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4,5,6,7,8,9,10),
+                 "column_headings" : ["EAL Number", "Test Pressure", "Test Duration", "Transducer Number", "Procedure", "Proof Date", "Proof Recall", "Proof Expiry", "Test Location", "Result", "Proof Certificate"],
+                 "entries" : self.entries, 
+                 "file_chooser" : "equipment_proof_file_certificate"}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
         
         Function.entry_completion(self, com_store, "equipment_proof_entry_eal", 0)
         Function.entry_completion(self, com_store, "equipment_proof_entry_pt", 0)
@@ -388,6 +422,9 @@ class EquipProof(Widget):
             file_name = text[0] + '_Proof_Cert-' + str(proof_date)
             proof_certificate = Function.file_path(self, 'Proof Certificates', text[0], file_name, 'pdf')
             shutil.copy(self.file, proof_certificate)
+            self.file_chooser.unselect_all()
+        else:
+            proof_certificate = "Not Uploaded"
             
         now = datetime.now()
         
@@ -424,12 +461,14 @@ class EquipProof(Widget):
     
     def on_equipment_proof_button_clear_clicked(self, equipment_proof_button_clear):
         self.tree_selection.unselect_all()
+        self.file_chooser.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
         self.current_filter = None
         
     def on_equipment_proof_file_certificate_file_set(self, equipment_proof_file_certificate):
-        self.file = equipment_proof_file_certificate.get_filename()
+        self.file_chooser = equipment_proof_file_certificate
+        self.file = self.file_chooser.get_filename()
     
     def on_equipment_proof_entry_eal_changed(self, equipment_proof_entry_eal):
         search = equipment_proof_entry_eal.get_text()
@@ -442,19 +481,22 @@ class EquipProof(Widget):
         
 class EquipClean(Widget):
     def __init__(self, queries, store_func, parent, com_store, proc_store):
-        glade_file = "Glade/equipment_cleanliness.glade"
-        widget_id = "equipment_cleanliness_page"
-        widget_scroll_id = "equipment_cleanliness_scroll_window"
-        widget_calander_id = "equipment_cleanliness_calendar_date"
-        timer_query = queries.cleanliness["select"]
-        store_setup = Gtk.ListStore(str, str, str, str, str, str, str, str, str, str)
-        column_numbers = (0,1,2,3,4,5,6,7,8,9)
-        column_headings = ["EAL Number", "Particle Counter Number", "Dew Point Meter", "Procedure", "Cleanliness & Dryness Date", "Cleanliness & Dryness Recall", "Cleanliness & Dryness Expiry", "Test Location", "Result", "Proof Certificate"]
-        store_func = store_func
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.entries = {"equipment_cleanliness_entry_eal" : 0, "equipment_cleanliness_entry_pco" : 1, "equipment_cleanliness_entry_dew" : 2, "equipment_cleanliness_entry_procedure" : 3, "equipment_cleanliness_entry_location" : 7} 
         self.result = "Pass"
+        
+        setup = {"glade_file" : "Glade/equipment_cleanliness.glade", 
+                 "widget_id" :  "equipment_cleanliness_page",
+                 "widget_scroll_id" : "equipment_cleanliness_scroll_window", 
+                 "widget_calander_id" : "equipment_cleanliness_calendar_date", 
+                 "timer_query" : queries.cleanliness["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, str, str, str, str, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4,5,6,7,8,9),
+                 "column_headings" : ["EAL Number", "Particle Counter Number", "Dew Point Meter", "Procedure", "Cleanliness & Dryness Date", "Cleanliness & Dryness Recall", "Cleanliness & Dryness Expiry", "Test Location", "Result", "Proof Certificate"],
+                 "entries" : self.entries, 
+                 "file_chooser" : "equipment_cleanliness_file_certificate"}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
         
         Function.entry_completion(self, com_store, "equipment_cleanliness_entry_eal", 0)
         Function.entry_completion(self, com_store, "equipment_cleanliness_entry_pco", 0)
@@ -477,9 +519,12 @@ class EquipClean(Widget):
         
         clean_certificate = ''
         if self.file != None:
-            file_name = text[0] + '_C&D_Cert-' + str(proof_date)
+            file_name = text[0] + '_C&D_Cert-' + str(clean_date)
             clean_certificate = Function.file_path(self, 'Cleanliness & Dryness Certificates', text[0], file_name, 'pdf')
             shutil.copy(self.file, clean_certificate)
+            self.file_chooser.unselect_all()
+        else:
+            clean_certificate = "Not Uploaded"
             
         now = datetime.now()
         for item in self.current_items:
@@ -516,14 +561,15 @@ class EquipClean(Widget):
     
     def on_equipment_cleanliness_button_clear_clicked(self, equipment_cleanliness_button_clear):
         self.tree_selection.unselect_all()
+        self.file_chooser.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
         self.current_filter = None
         print ("Clear")
         
     def on_equipment_cleanliness_file_certificate_file_set(self, equipment_cleanliness_file_certificate):
-        self.file = equipment_cleanliness_file_certificate.get_filename()
-        print(self.file)
+        self.file_chooser = equipment_cleanliness_file_certificate
+        self.file = self.file_chooser.get_filename()
     
     def on_equipment_cleanliness_entry_eal_changed(self, equipment_cleanliness_entry_eal):
         search = equipment_cleanliness_entry_eal.get_text()
@@ -536,18 +582,21 @@ class EquipClean(Widget):
         
 class EquipSearch(Widget):
     def __init__(self, queries, store_func, parent):
-        glade_file = "Glade/equipment_search.glade"
-        widget_id = "equipment_search_page"
-        widget_scroll_id = "equipment_search_scroll_window"
-        widget_calander_id = None
-        timer_query = queries.overview["select"]
-        store_setup = Gtk.ListStore(str, str, str, str, str, str, str)
-        column_numbers = (0,1,2,3,4, 5, 6)
-        column_headings = ["EAL Number", "Equipment Type", "Serial Number", "Calibration Expiry", "Proof Expiry", "Cleanliness Expiry", "Current Location"]
-        store_func = store_func
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.entries = {"equipment_search_entry_search" : 0}
+        
+        setup = {"glade_file" : "Glade/equipment_search.glade", 
+                 "widget_id" :  "equipment_search_page",
+                 "widget_scroll_id" : "equipment_search_scroll_window", 
+                 "widget_calander_id" : None, 
+                 "timer_query" : queries.overview["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, str, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4,5,6),
+                 "column_headings" : ["EAL Number", "Equipment Type", "Serial Number", "Calibration Expiry", "Proof Expiry", "Cleanliness Expiry", "Current Location"],
+                 "entries" : self.entries, 
+                 "file_chooser" : None}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
         
     def on_equipment_search_entry_search_changed(self, equipment_search_entry_search):
         search = equipment_search_entry_search.get_text()
@@ -567,18 +616,22 @@ class EquipSearch(Widget):
         
 class Log(Widget):
     def __init__(self, queries, store_func, parent, com_store, proc_store):
-        glade_file = "Glade/equipment_log.glade"
-        widget_id = "equipment_log_page"
-        widget_scroll_id = "equipment_log_scroll_window"
-        widget_calander_id = "equipment_log_calendar_date"
-        timer_query = queries.logbook["select"]
-        store_setup = Gtk.ListStore(str, str, str, str, str)
-        column_numbers = (0,1,2,3,4)
-        column_headings = ["EAL Number", "Log Date", "Location", "Documents", "Message"]
-        store_func = store_func
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.entries = {"equipment_log_entry_eal" : 0, "equipment_log_entry_from" : 2, "equipment_log_entry_procedure" : 3, "equipment_log_entry_message" : 4} 
+        
+        setup = {"glade_file" : "Glade/equipment_log.glade", 
+                 "widget_id" :  "equipment_log_page",
+                 "widget_scroll_id" : "equipment_log_scroll_window", 
+                 "widget_calander_id" : "equipment_log_calendar_date", 
+                 "timer_query" : queries.logbook["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4),
+                 "column_headings" : ["EAL Number", "Log Date", "Location", "Documents", "Message"],
+                 "entries" : self.entries, 
+                 "file_chooser" : None}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
+        
         Function.entry_completion(self, com_store, "equipment_log_entry_eal", 0)
         Function.entry_completion(self, proc_store, "equipment_log_entry_procedure", 2)
         
@@ -610,18 +663,22 @@ class Log(Widget):
         
 class DocAdd(Widget):
     def __init__(self, queries, store_func, parent):
-        glade_file = "Glade/documents.glade"
-        widget_id = "documents_add_page"
-        widget_scroll_id = "documents_add_scroll_window"
-        widget_calander_id = "documents_add_calendar_date"
-        timer_query = queries.documents["select"]
-        store_setup = Gtk.ListStore(str, str, str, int, str, str, str)
-        column_numbers = (0,1,2,3,4,5,6)
-        column_headings = ["Client", "Reference", "Name", "Issue", "Reason for Issue", "Date", "File"]
-        store_func = store_func
         self.queries = queries
-        Widget.__init__(self, glade_file, widget_id, widget_scroll_id, widget_calander_id, timer_query, store_setup, column_numbers, column_headings, store_func, parent, self.queries)
         self.entries = {"documents_add_entry_for" : 0, "documents_add_entry_ref" : 1, "documents_add_entry_name" : 2, "documents_add_entry_issue" : 3, "documents_add_entry_reason" : 4}
+        
+        setup = {"glade_file" : "Glade/documents.glade", 
+                 "widget_id" :  "documents_add_page",
+                 "widget_scroll_id" : "documents_add_scroll_window", 
+                 "widget_calander_id" : "documents_add_calendar_date", 
+                 "timer_query" : queries.documents["select"],
+                 "store_setup" : Gtk.ListStore(str, str, str, int, str, str, str), 
+                 "column_numbers" : (0,1,2,3,4,5,6),
+                 "column_headings" : ["Client", "Reference", "Name", "Issue", "Reason for Issue", "Date", "File"],
+                 "entries" : self.entries, 
+                 "file_chooser" : "documents_add_file_path"}
+        
+        Widget.__init__(self, store_func, parent, queries, **setup)
+        
         Function.entry_completion(self, self.store, "documents_add_entry_for", 0)
         Function.entry_completion(self, self.store, "documents_add_entry_ref", 1)
         Function.entry_completion(self, self.store, "documents_add_entry_name", 2)
@@ -636,6 +693,9 @@ class DocAdd(Widget):
             file_name = text[2]
             doc = Function.file_path(self, 'Documents', text[0], file_name, 'pdf')
             shutil.copy(self.file, doc)
+            self.file_chooser.unselect_all()
+        else:
+            doc = "Not Uploaded"
             
         now = datetime.now()
         for item in self.current_items:
@@ -661,19 +721,18 @@ class DocAdd(Widget):
             log_query = self.queries.logbook["insert"]
             log_values = (now, text[1], date, "N/A", text[2], text[4])
             self.insert(query, values, log_query, log_values)
-        
-        
-        
         Function.clear_entries(self, entries)
         
     def on_documents_add_button_clear_clicked(self, documents_add_button_clear):
         self.tree_selection.unselect_all()
+        self.file_chooser.unselect_all()
         entries = self.entries
         Function.clear_entries(self, entries)
         self.current_filter = None
         
     def on_documents_add_file_path_file_set(self, documents_add_file_path):
-        self.file = documents_add_file_path.get_filename()
+        self.file_chooser = documents_add_file_path
+        self.file = self.file_chooser.get_filename()
         
     def on_documents_add_entry_ref_changed(self, entry):
         search = entry.get_text()
