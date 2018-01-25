@@ -18,8 +18,8 @@ class Function:
     
     def get_entries(self, entries):
         text = []
-        for entry in entries:
-            values = Function.get_entry(self, entry)
+        for i in range(len(entries)):
+            values = Function.get_entry(self, entries[i])
             text.append(str(values))
         return text
     

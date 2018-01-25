@@ -209,16 +209,16 @@ class EquipAdd(Widget):
         #Function.entry_completion(self, self.store, "equipment_add_entry_serial", 5)
         
     def on_equipment_add_button_add_clicked(self, equipment_add_button_add):
-        entries = self.entries
+        entries = ["equipment_add_entry_eal", "equipment_add_entry_type", "equipment_add_entry_manufacturer", "equipment_add_entry_model", "equipment_add_entry_pressure", "equipment_add_entry_serial"]
         text = Function.get_entries(self, entries)
         now = datetime.now()
         for item in self.current_items:
             row = list(item)
-            if row[0] != text[0]:
-                match = False
-                
-            elif row[0] == text[0]:
+            if row[0] == text[0]:
                 match = True
+                break
+            else:
+                match = False
                 
         if match == True:
             query = self.queries.equipment["update"]
@@ -303,7 +303,7 @@ class EquipCal(Widget):
         self.type = "Internal"
     
     def on_equipment_calibration_button_enter_clicked(self, equipment_calibration_button_enter):
-        entries = self.entries
+        entries = ["equipment_calibration_entry_eal", "equipment_calibration_entry_company"]
         text = Function.get_entries(self, entries)
         print(text)
         calibration_type = self.type
@@ -332,11 +332,11 @@ class EquipCal(Widget):
         
         for item in self.current_items:
             row = list(item)
-            if row[0] != text[0]:
-                match = False
-                
-            elif row[0] == text[0]:
+            if row[0] == text[0]:
                 match = True
+                break
+            else:
+                match = False
                 
         if match == True:
             query = self.queries.calibration["update"]
@@ -411,7 +411,7 @@ class EquipProof(Widget):
         self.result = "Fail"
     
     def on_equipment_proof_button_enter_clicked(self, equipment_proof_button_enter):
-        entries = self.entries
+        entries = ["equipment_proof_entry_eal", "equipment_proof_entry_bar", "equipment_proof_entry_duration", "equipment_proof_entry_pt", "equipment_proof_entry_procedure", "equipment_proof_entry_location"]
         text = Function.get_entries(self, entries)
         proof_date = Cal_Date.date(self, "equipment_proof_calendar_date")
         proof_expiry = Cal_Date.expiry(self, proof_date, 12)
@@ -430,11 +430,11 @@ class EquipProof(Widget):
         
         for item in self.current_items:
             row = list(item)
-            if row[0] != text[0]:
-                match = False
-                
-            elif row[0] == text[0]:
+            if row[0] == text[0]:
                 match = True
+                break
+            else:
+                match = False
                 
         if match == True:
             query = self.queries.proof["update"]
@@ -511,7 +511,7 @@ class EquipClean(Widget):
         self.result = "Fail"
     
     def on_equipment_cleanliness_button_enter_clicked(self, equipment_cleanliness_button_enter):
-        entries = self.entries
+        entries = ["equipment_cleanliness_entry_eal", "equipment_cleanliness_entry_pco", "equipment_cleanliness_entry_dew", "equipment_cleanliness_entry_procedure", "equipment_cleanliness_entry_location"]
         text = Function.get_entries(self, entries)
         clean_date = Cal_Date.date(self, "equipment_cleanliness_calendar_date")
         clean_expiry = Cal_Date.expiry(self, clean_date, 12)
@@ -529,11 +529,11 @@ class EquipClean(Widget):
         now = datetime.now()
         for item in self.current_items:
             row = list(item)
-            if row[0] != text[0]:
-                match = False
-                
-            elif row[0] == text[0]:
+            if row[0] == text[0]:
                 match = True
+                break
+            else:
+                match = False
                 
         if match == True:
             query = self.queries.cleanliness["update"]
@@ -636,7 +636,7 @@ class Log(Widget):
         Function.entry_completion(self, proc_store, "equipment_log_entry_procedure", 2)
         
     def on_equipment_log_button_enter_clicked(self, equipment_log_button_enter):
-        entries = self.entries
+        entries = ["equipment_log_entry_eal", "equipment_log_entry_from", "equipment_log_entry_procedure", "equipment_log_entry_message"]
         text = Function.get_entries(self, entries)
         log_date = Cal_Date.date(self, "equipment_log_calendar_date")
         now = datetime.now()
@@ -684,7 +684,7 @@ class DocAdd(Widget):
         Function.entry_completion(self, self.store, "documents_add_entry_name", 2)
         
     def on_documents_add_button_enter_clicked(self, documents_add_button_enter):
-        entries = self.entries
+        entries = ["documents_add_entry_for", "documents_add_entry_ref", "documents_add_entry_name", "documents_add_entry_issue", "documents_add_entry_reason"]
         text = Function.get_entries(self, entries)
         date = Cal_Date.date(self, "documents_add_calendar_date")
         
@@ -700,11 +700,11 @@ class DocAdd(Widget):
         now = datetime.now()
         for item in self.current_items:
             row = list(item)
-            if row[1] != text[1]:
-                match = False
-                
-            elif row[1] == text[1]:
+            if row[1] == text[1]:
                 match = True
+                break
+            else:
+                match = False
                 
         if match == True:
             query = self.queries.documents["update"]
