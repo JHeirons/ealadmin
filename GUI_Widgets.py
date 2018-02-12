@@ -318,9 +318,11 @@ class EquipCal(Widget):
         calibration_expiry = Cal_Date.expiry(self, calibration_date, length)
         calibration_recall = Cal_Date.recall(self, calibration_expiry)
         calibration_certificate = ''
+        
         if self.file != None:
-            file_name = text[0] + '_Cal_Cert-' + str(calibration_date)
-            calibration_certificate = Function.file_path(self, 'Calibration Certificates', text[0], file_name, 'pdf')
+            file_name = 'Calibration_Certificate_' + str(calibration_date)
+            file_settings = {"dep":"Equipment", "sub":"Calibration", "eal_ref":text[0]}
+            calibration_certificate = Function.file_path2(self, self.file, file_name, file_settings)
             shutil.copy(self.file, calibration_certificate)
             self.file_chooser.unselect_all()
         else:
@@ -419,8 +421,9 @@ class EquipProof(Widget):
         
         proof_certificate = ''
         if self.file != None:
-            file_name = text[0] + '_Proof_Cert-' + str(proof_date)
-            proof_certificate = Function.file_path(self, 'Proof Certificates', text[0], file_name, 'pdf')
+            file_name = 'Proof_Certificate_' + str(proof_date)
+            file_settings = {"dep":"Equipment", "sub":"Proof", "eal_ref":text[0]}
+            proof_certificate = Function.file_path2(self, self.file, file_name, file_settings)
             shutil.copy(self.file, proof_certificate)
             self.file_chooser.unselect_all()
         else:
@@ -519,8 +522,9 @@ class EquipClean(Widget):
         
         clean_certificate = ''
         if self.file != None:
-            file_name = text[0] + '_C&D_Cert-' + str(clean_date)
-            clean_certificate = Function.file_path(self, 'Cleanliness & Dryness Certificates', text[0], file_name, 'pdf')
+            file_name = 'Cleanliness_&_Dryness_Certificate_' + str(clean_date)
+            file_settings = {"dep":"Equipment", "sub":"Cleanliness_&_Dryness", "eal_ref":text[0]}
+            clean_certificate = Function.file_path2(self, self.file, file_name, file_settings)
             shutil.copy(self.file, clean_certificate)
             self.file_chooser.unselect_all()
         else:
@@ -691,7 +695,8 @@ class DocAdd(Widget):
         doc = ''
         if self.file != None:
             file_name = text[2]
-            doc = Function.file_path(self, 'Documents', text[0], file_name, 'pdf')
+            file_settings = {"dep":"Procedures", "sub":text[0], "eal_ref":None}
+            doc = Function.file_path2(self, self.file, file_name, file_settings)
             shutil.copy(self.file, doc)
             self.file_chooser.unselect_all()
         else:

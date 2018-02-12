@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from dateutil.relativedelta import *
 from datetime import datetime, date
+import sys
 
 import os
 
@@ -43,19 +44,29 @@ class Function:
         completion.set_model(model)
         completion.set_text_column(column)
         entry_to_complete.set_completion(completion)
+    
+    def file_path2(self, file, name, file_settings):
+        filename, file_extension = os.path.splitext(file)
+        ops = sys.platform
         
-    def file_path(self, dept_folder, sub_folder, name, file_format):
-        #slash = '\\'
-        slash = '/'
-        dot = '.'
-        #path_root = '\\\\EALSERVER\\Jonathan Folder\\Admin_Test\\'
-        path_root = "Documents/Programming/Brackets/ealadmin/"
-        dept_folder_path = path_root + dept_folder 
-        folder_path = dept_folder_path + slash + sub_folder
+        if ops == 'win32':
+            s = '\\'
+            path_root = '\\\\EALSERVER\\Jonathan Folder\\Admin_Test\\'
+            
+        elif ops == 'darwin':
+            s = '/'
+            path_root = "Documents/Programming/Brackets/ealadmin/"
+            
+        
+        if file_settings["eal_ref"] != None:
+            folder_path = path_root + file_settings["dep"] + s + file_settings["sub"] + s + file_settings["eal_ref"]
+        else:
+            folder_path = path_root + file_settings["dep"] + s + file_settings["sub"]
+            
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         
-        full_path = folder_path + slash + name + dot + file_format
+        full_path = folder_path + s + name + file_extension
         
         return full_path
 
